@@ -21,7 +21,7 @@ The following mock data:
 import { create, mock } from 'offstage';
 
 // create connects the api to the REST request
-create('service.hello', 'GET /hello-world');
+create('service.hello', 'POST /say-hello');
 
 // mock mocks the data transfer
 mock('service.hello', {}, { message: 'Hello world!' });
