@@ -20,7 +20,7 @@ The following mock data:
 ```ts
 import { create, mock } from 'offstage';
 
-// add connects the api to the REST request
+// create connects the api to the REST request
 create('service.hello', 'GET /hello-world');
 
 // mock mocks the data transfer
@@ -30,7 +30,7 @@ mock('service.hello', { subject:'something specific' }, { message: 'Hello someth
 
 Would generate:
 
-1. an Axios powered TypeScript api:
+1. an Axios powered TypeScript api (that also works offline)
 ```ts
 import { service } from '@/offstage';
 await service.hello(); // returns { message: 'Hello world!' }
