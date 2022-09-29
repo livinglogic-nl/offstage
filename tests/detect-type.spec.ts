@@ -44,3 +44,11 @@ test('detects an array of mixed types (number and null)', async({}) => {
 test('detects an array of mixed types (object and number)', async({}) => {
   expect(detectType([{ name:'jack' }, 123])).toBe('({name:string}|number)[]');
 });
+
+test('supports a named type', async({}) => {
+  expect(detectType({ 'x-os-type': 'Person', name:'jack' })).toBe('Person');
+});
+
+test('supports an array of named types', async({}) => {
+  expect(detectType([ { 'x-os-type': 'Person', name:'jack' } ])).toBe('Person[]');
+});
