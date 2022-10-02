@@ -2,12 +2,13 @@
   "name": "offstage",
   "version": "0.0.4",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.26.1"
+    "@playwright/test": "^1.26.1",
+    "json5": "^2.2.1"
   }
 }
