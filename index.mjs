@@ -24,7 +24,7 @@ export const mock = (serviceMethodSignature, request, response) => {
 
 const tab = '  ';
 
-const renderMethodLines = ([methodName, methodConfig]) => tab + `
+const renderMethod = ([methodName, methodConfig]) => tab + `
   ${methodName}: async(request) => {
     const requestSignature = JSON.stringify(request);
     const mocks = ${json5.stringify(methodConfig.mocks)}
@@ -38,7 +38,7 @@ export const generate = () => {
   return Object.entries(services).map(([serviceName, serviceConfig]) => {
     return [
       `export const ${serviceName} = {`,
-      ...Object.entries(serviceConfig.methods).flatMap(renderMethodLines),
+      ...Object.entries(serviceConfig.methods).flatMap(renderMethod),
       `}`,
     ].join('\n')
   }).join('\n\n');

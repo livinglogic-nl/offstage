@@ -14,7 +14,7 @@ test('vite test', async({ page }) => {
 
 test('Hello world in dev mode', async({ page }) => {
   await runVite({
-    'src/offstage/mock.mjs': `
+    'src/offstage/mock.ts': `
 import { create, mock } from 'offstage';
 create('service.hello', 'POST /say-hello');
 mock('service.hello', {}, { message: 'Hello world!' });

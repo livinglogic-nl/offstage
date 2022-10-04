@@ -40,9 +40,11 @@ const runVite = async(fileOverrides:Record<string,string>, callback:Function) =>
   }
   child_process.execSync(`rm -rf ${dir}/node_modules/offstage`);
   child_process.execSync(`ln -s ${process.cwd()} ${dir}/node_modules/offstage`);
+  console.time('sync')
+  child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:dir });
 
-
-  await execWithOutput('node', ['node_modules/offstage/sync.mjs'], { cwd:dir });
+  // await execWithOutput('node', ['node_modules/offstage/sync.mjs'], { cwd:dir });
+  console.timeEnd('sync')
   viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:dir });
 
   let listeningCallback = null;
