@@ -14,38 +14,43 @@ test.afterAll(killVite);
 
 const vitePort = 5173;
 const baseURL = 'http://localhost:5173';
+const sandboxDir = '/tmp/offstage-sandbox';
 
 
-const execWithOutput = async(cmd:string, args:string[], options:any) => {
-  const proc = child_process.spawn(cmd, args, options);
-  proc.stdout.on('data', data => console.log(`${data}`));
-  proc.stderr.on('data', data => console.log(`${data}`));
-  let resolve = null;
-  const p = new Promise(ok => resolve = ok);
-  proc.on('exit', resolve);
-  await p;
+const resetSandbox = async() => {
+  child_process.execSync(`rsync -av tests/vite-sandbox/ ${sandboxDir} --exclude node_modules --delete`);
 }
 
-const runVite = async(fileOverrides:Record<string,string>, callback:Function) => {
-  const dir = '/tmp/offstage-sandbox';
-  child_process.execSync(`rsync -av tests/vite-sandbox/ ${dir} --delete`);
-
-  await Promise.all(Object.entries(fileOverrides).map(async([key,val]) => {
-    const filePath = dir + '/' + key;
+const addCustomFiles = async(customFiles:Record<string,string>) => {
+  await Promise.all(Object.entries(customFiles).map(async([key,val]) => {
+    const filePath = sandboxDir + '/' + key;
     await fs.promises.mkdir(path.dirname(filePath), { recursive:true });
     await fs.promises.writeFile(filePath, val);
   }));
-  if(!fs.existsSync(dir + '/node_modules')) {
-    child_process.execSync(`npm i`, { cwd:dir });
-  }
-  child_process.execSync(`rm -rf ${dir}/node_modules/offstage`);
-  child_process.execSync(`ln -s ${process.cwd()} ${dir}/node_modules/offstage`);
-  console.time('sync')
-  child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:dir });
+}
 
-  // await execWithOutput('node', ['node_modules/offstage/sync.mjs'], { cwd:dir });
+const installNodeModulesAndLinkOffstage = async() => {
+  if(!fs.existsSync(sandboxDir + '/node_modules')) {
+    child_process.execSync([
+      `npm i`,
+      `rm -rf node_modules/offstage`,
+      `ln -s ${process.cwd()} node_modules/offstage`,
+      ].join(' && '), { cwd:sandboxDir });
+  }
+}
+
+const runVite = async(customFiles:Record<string,string>, callback:Function) => {
+  console.time('setup')
+  await resetSandbox();
+  await addCustomFiles(customFiles);
+  await installNodeModulesAndLinkOffstage();
+  console.timeEnd('setup')
+
+  console.time('sync')
+  console.log( child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir }).toString() );
   console.timeEnd('sync')
-  viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:dir });
+
+  viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:sandboxDir });
 
   let listeningCallback = null;
   const listening = new Promise(ok => listeningCallback = ok);
@@ -56,7 +61,7 @@ const runVite = async(fileOverrides:Record<string,string>, callback:Function) =>
     }
   });
   await listening;
-  await callback({ baseURL });
+  await callback({ sandboxDir, baseURL });
 
   const killed = new Promise(ok => viteRunningProcess.on('exit', ok));
   killVite();

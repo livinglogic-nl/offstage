@@ -2,7 +2,7 @@
   "name": "offstage",
   "version": "0.0.5",
   "description": "",
-  "main": "index.mjs",
+  "main": "index.js",
   "scripts": {},
   "keywords": [],
   "author": "",

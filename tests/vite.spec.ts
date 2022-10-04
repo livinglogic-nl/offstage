@@ -31,3 +31,25 @@ document.body.innerHTML = (await service.hello()).message
   });
 });
 
+test('Hello world in release mode', async({ page }) => {
+  await runVite({
+    'src/offstage/mock.ts': `
+import { create, mock } from 'offstage';
+create('service.hello', 'POST /say-hello');
+mock('service.hello', {}, { message: 'Hello world!' });
+    `,
+
+    'src/main.ts': `
+import { service } from '@/offstage';
+console.log(await service.hello())
+document.body.innerHTML = (await service.hello()).message
+    `,
+  }, async({ baseURL, sandboxDir }) => {
+      await import(`${sandboxDir}/src/offstage/mock.js`);
+      const { mount } = await import(`../index.js`);
+      await mount(page);
+      await page.goto(baseURL);
+      await page.waitForSelector('"Hello world!"');
+  });
+});
+
