@@ -47,7 +47,10 @@ const runVite = async(customFiles:Record<string,string>, callback:Function) => {
   console.timeEnd('setup')
 
   console.time('sync')
-  console.log( child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir }).toString() );
+  try {
+    child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir });
+  } catch(e) {
+  }
   console.timeEnd('sync')
 
   viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:sandboxDir });
