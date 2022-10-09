@@ -48,8 +48,14 @@ const runVite = async(customFiles:Record<string,string>, callback:Function) => {
 
   console.time('sync')
   try {
-    child_process.execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir });
+    console.log(
+    child_process
+      .execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir })
+      .toString()
+    );
+
   } catch(e) {
+    console.log(e)
   }
   console.timeEnd('sync')
 
@@ -64,6 +70,10 @@ const runVite = async(customFiles:Record<string,string>, callback:Function) => {
     }
   });
   await listening;
+
+  Object.keys(require.cache)
+    .filter(key => key.includes('/tmp/'))
+    .forEach(key => delete require.cache[key])
   await callback({ sandboxDir, baseURL });
 
   const killed = new Promise(ok => viteRunningProcess.on('exit', ok));
