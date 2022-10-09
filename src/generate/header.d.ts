@@ -6,19 +6,34 @@ const canonical = (obj:any) => {
   return JSON.stringify(obj, Array.from(keys).sort());
 }
 
-const handleRequest = async(config:any, request:any, options:any, mocks:any) => {
-  const { fullResponse } = options;
-  if(mocks && !('offstagePlaywright' in window)) {
-    const requestSignature = JSON.stringify(request);
+const handleRequest = async(config:any, requestData:any, options:any, mocks:any) => {
+  const isPlaywright = ('offstagePlaywright' in window);
+  if(mocks && !isPlaywright) {
+    const requestSignature = JSON.stringify(requestData);
     const response = mocks[requestSignature] ?? Object.values(mocks)[0];
-    return fullResponse ? { data:response } : response;
+    return options.fullResponse ? { data:response } : response;
   }
-  const params = config.method === 'GET' ? request : {};
-  const data = config.method !== 'GET' ? request : {};
+
+  const restData = {...requestData};
+  const url = config.url.replace(/:([^\/]+)/, (_,match) => {
+    const value = restData[match];
+    delete restData[match]
+    return value;
+  });
+
+  const params = config.method === 'GET' ? restData : {};
+  const data = config.method !== 'GET' ? restData : {};
+
+  const headers = config.headers || {};
+  if(isPlaywright) {
+    headers['x-offstage-data'] = canonical(requestData);
+  }
   const result = await axios.request({
     ...config,
+    headers,
+    url,
     params,
     data,
   });
-  return fullResponse ? result : result.data;
+  return options.fullResponse ? result : result.data;
 }

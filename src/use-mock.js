@@ -1,7 +1,8 @@
+const canonical = require('./canonical.js');
 module.exports = (mocks) => (serviceMethodSignature, request, response) => {
   if(!mocks[serviceMethodSignature]) {
     mocks[serviceMethodSignature] = {};
   }
-  const requestSignature = JSON.stringify(request);
+  const requestSignature = canonical(request);
   mocks[serviceMethodSignature][requestSignature] = response;
 }
