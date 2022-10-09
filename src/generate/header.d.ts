@@ -15,14 +15,22 @@ const handleRequest = async(config:any, requestData:any, options:any, mocks:any)
   }
 
   const restData = {...requestData};
-  const url = config.url.replace(/:([^\/]+)/, (_,match) => {
+
+  const [path,query] = config.url.split('?');
+  let url = path.replace(/:([^\/]+)/, (_,match) => {
     const value = restData[match];
     delete restData[match]
     return value;
   });
-
   const params = config.method === 'GET' ? restData : {};
   const data = config.method !== 'GET' ? restData : {};
+
+  if(query) {
+    query.split(',').forEach(name => {
+      params[name] = requestData[name];
+    });
+  }
+
 
   const headers = config.headers || {};
   if(isPlaywright) {

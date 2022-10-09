@@ -4,7 +4,7 @@ module.exports = (services, mocks) => async(page) => {
   await page.addInitScript(() => window.offstagePlaywright = true);
   page.overrides = {};
 
-  const useRouteHandler = (regex, method, config) => (route, request) => {
+  const useRouteHandler = (method, config) => (route, request) => {
     if(request.method() !== method) { return route.continue(); }
 
     const { serviceMethodSignature } = config;
@@ -27,9 +27,11 @@ module.exports = (services, mocks) => async(page) => {
   await Promise.all(
     Object.entries(services._inverse).map(([signatureToMatch, config]) => {
       const [method,endpoint] = signatureToMatch.split(' ');
-      const pattern = '.+' + endpoint.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
-      const re = new RegExp(pattern);
-      return page.route(re, useRouteHandler(re, method, config));
+
+      const [path,query] = endpoint.split('?');
+      const pattern = '.+' + path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
+      // const queryPattern = query ? '?' + query.split(',').map(name => `${name}=(?<${name}>[^&]+)`).join('&') : '';
+      return page.route(new RegExp(pattern), useRouteHandler(method, config));
     })
   );
 }

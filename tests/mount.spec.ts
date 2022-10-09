@@ -5,7 +5,8 @@ import runVite from './run-vite';
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Use mount to enable playwright routing', () => {
-  test('Hello world in release mode', async({ page }) => {
+
+  test('POST request', async({ page }) => {
     await runVite({
       'src/offstage/mock.ts': `
 import { create, mock } from 'offstage';
@@ -29,7 +30,7 @@ document.body.innerHTML = (await example.hello()).message
     });
   });
 
-  test('Chooses mock based on best matching request', async({page}) => {
+  test('POST request with body', async({page}) => {
     await runVite({
       'src/offstage/mock.ts': `
 import { create, mock } from 'offstage';
@@ -48,8 +49,11 @@ document.body.innerHTML = (await example.hello({ subject:'something else' })).me
 
         await mount(page);
 
-        await page.goto(baseURL);
-        await page.waitForSelector('"Hello something else!"');
+        await Promise.all([
+          page.goto(baseURL),
+          requestPredicatePromise(page, request => request.postDataJSON()?.subject === 'something else'),
+          page.waitForSelector('"Hello something else!"'),
+        ]);
     });
   });
 
@@ -74,8 +78,8 @@ document.body.innerHTML = (await example.getFoo({ id:2 })).name
 
         await Promise.all([
           page.goto(baseURL),
-          page.waitForSelector('"Baz"'),
           requestPredicatePromise(page, request => request.url().includes('/foo/2')),
+          page.waitForSelector('"Baz"'),
         ]);
     });
   });
@@ -100,8 +104,36 @@ document.body.innerHTML = (await example.getFoo({ id:2 })).name
         await mount(page);
         await Promise.all([
           page.goto(baseURL),
-          page.waitForSelector('"Baz"'),
           requestPredicatePromise(page, request => request.url().includes('?id=2')),
+          page.waitForSelector('"Baz"'),
+        ]);
+    });
+  });
+
+  test('PATCH request with url path params, url query params and body', async({page}) => {
+    await runVite({
+      'src/offstage/mock.ts': `
+import { create, mock } from 'offstage';
+create('example.updateItem', 'PATCH /items/:id?responseType');
+mock('example.updateItem', { id: 1, responseType:'json', name:'somename' }, { name: 'somename' });
+      `,
+
+      'src/main.ts': `
+import { example } from '@/offstage';
+document.body.innerHTML = (await example.updateItem({ id: 1, responseType:'json', name:'somename' })).name
+      `,
+    }, async({ baseURL, sandboxDir }) => {
+        await import(`${sandboxDir}/src/offstage/mock.js`);
+        const { mount } = await import(`../index.js`);
+
+        await mount(page);
+
+        await Promise.all([
+          page.goto(baseURL),
+          requestPredicatePromise(page, request => request.url().includes('/items/1')),
+          requestPredicatePromise(page, request => request.url().includes('?responseType=json')),
+          requestPredicatePromise(page, request => request.postDataJSON()?.name === 'somename'),
+          page.waitForSelector('"somename"'),
         ]);
     });
   });
