@@ -1,3 +1,4 @@
+import requestPredicatePromise from './request-predicate-promise';
 import { test, expect } from '@playwright/test';
 import runVite from './run-vite';
 
@@ -71,8 +72,37 @@ document.body.innerHTML = (await example.getFoo({ id:2 })).name
 
         await mount(page);
 
-        await page.goto(baseURL);
-        await page.waitForSelector('"Baz"');
+        await Promise.all([
+          page.goto(baseURL),
+          page.waitForSelector('"Baz"'),
+          requestPredicatePromise(page, request => request.url().includes('/foo/2')),
+        ]);
+    });
+  });
+
+  test('GET request with url query params', async({page}) => {
+    await runVite({
+      'src/offstage/mock.ts': `
+import { create, mock } from 'offstage';
+create('example.getFoo', 'GET /foo');
+mock('example.getFoo', { id: 1 }, { name: 'Bar' });
+mock('example.getFoo', { id: 2 }, { name: 'Baz' });
+      `,
+
+      'src/main.ts': `
+import { example } from '@/offstage';
+document.body.innerHTML = (await example.getFoo({ id:2 })).name
+      `,
+    }, async({ baseURL, sandboxDir }) => {
+        await import(`${sandboxDir}/src/offstage/mock.js`);
+        const { mount } = await import(`../index.js`);
+
+        await mount(page);
+        await Promise.all([
+          page.goto(baseURL),
+          page.waitForSelector('"Baz"'),
+          requestPredicatePromise(page, request => request.url().includes('?id=2')),
+        ]);
     });
   });
 });
