@@ -6,12 +6,11 @@ const useOverride = require('./src/use-override.js');
 
 const services = {};
 const mocks = {};
-const overrides = {};
 
 const create = useCreate(services);
 const mock = useMock(mocks);
 const generate = useGenerate(services, mocks);
-const mount = useMount(services, mocks, overrides);
+const mount = useMount(services, mocks);
 const override = useOverride();
 
 module.exports = {

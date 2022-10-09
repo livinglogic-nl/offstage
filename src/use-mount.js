@@ -1,10 +1,11 @@
 const useMock = require('./use-mock');
 const canonical = require('./canonical');
 
-module.exports = (services, mocks, overrides) => async(page) => {
-  page.overrides = {};
+module.exports = (services, mocks) => async(page) => {
   await page.addInitScript(() => window.offstagePlaywright = true);
-  page.route('**', (route,request) => {
+  page.overrides = {};
+
+  const handlePossibleRoute = (route, request) => {
     const url = request.url().match(/\/\/[^/]+(\/.*)/)[1];
     const signature = `${request.method()} ${url}`;
     const match = services._inverse[signature];
@@ -26,5 +27,12 @@ module.exports = (services, mocks, overrides) => async(page) => {
     } else {
       route.continue()
     }
-  });
+  }
+
+  await Promise.all(
+    Object.entries(services._inverse).map(([signatureToMatch, config]) => {
+      const [method,endpoint] = signatureToMatch.split(' ');
+      return page.route('**'+endpoint, handlePossibleRoute);
+    })
+  );
 }
