@@ -13,7 +13,9 @@ mock('example.hello', {}, { message: 'Hello world!' });
 
     'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.hello()).message
+(async() => {
+  document.body.innerHTML = (await example.hello()).message
+})();
     `,
   }, async({ baseURL }) => {
       await page.goto(baseURL);
@@ -32,7 +34,9 @@ mock('example.hello', { subject:'something else' }, { message: 'Hello something 
 
     'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.hello({ subject:'something else' })).message
+(async() => {
+  document.body.innerHTML = (await example.hello({ subject:'something else' })).message
+})();
     `,
   }, async({ baseURL, sandboxDir }) => {
       await import(`${sandboxDir}/src/offstage/mock.js`);

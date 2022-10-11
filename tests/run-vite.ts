@@ -40,13 +40,10 @@ const installNodeModulesAndLinkOffstage = async() => {
 }
 
 const runVite = async(customFiles:Record<string,string>, callback:Function) => {
-  console.time('setup')
   await resetSandbox();
   await addCustomFiles(customFiles);
   await installNodeModulesAndLinkOffstage();
-  console.timeEnd('setup')
 
-  console.time('sync')
   try {
     console.log(
     child_process
@@ -57,7 +54,6 @@ const runVite = async(customFiles:Record<string,string>, callback:Function) => {
   } catch(e) {
     console.log(e)
   }
-  console.timeEnd('sync')
 
   viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:sandboxDir });
 

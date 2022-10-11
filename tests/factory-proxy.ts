@@ -3,7 +3,7 @@ test('just a test', async() => {
   const factory = (defaultValues) => 
     new Proxy({}, {
       get(obj,key) {
-        return (init) => ({
+        return (init = {}) => ({
           ['x-os-type']: key,
           ...defaultValues,
           ...init,

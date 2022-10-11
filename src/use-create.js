@@ -10,7 +10,6 @@ module.exports = (services) => {
     const entry = {
       endpointSignature,
       serviceMethodSignature,
-      mocks: {},
     }
     services[service].methods[method] = entry;
 

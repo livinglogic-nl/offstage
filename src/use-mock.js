@@ -4,5 +4,5 @@ module.exports = (mocks) => (serviceMethodSignature, request, response) => {
     mocks[serviceMethodSignature] = {};
   }
   const requestSignature = canonical(request);
-  mocks[serviceMethodSignature][requestSignature] = response;
+  mocks[serviceMethodSignature][requestSignature] = { request, response };
 }

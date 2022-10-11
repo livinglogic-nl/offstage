@@ -74,4 +74,5 @@ const detectType = (...samples) => {
   return collectTypes(root).join('|')
 }
 
-export default detectType;
+
+module.exports = detectType;

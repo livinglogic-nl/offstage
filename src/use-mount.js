@@ -13,10 +13,10 @@ module.exports = (services, mocks) => async(page) => {
       ...mocks[serviceMethodSignature],
       ...page.overrides[serviceMethodSignature],
     };
-    let response = matchedMocks[key] ?? Object.values(matchedMocks)[0];
+    let response = matchedMocks[key]?.response ?? Object.values(matchedMocks)[0].response
     if(typeof response === 'function') {
       response = response({
-        defaultResponse: mocks[match.serviceMethodSignature],
+        defaultResponse: mocks[serviceMethodSignature].response,
       });
     }
     route.fulfill({

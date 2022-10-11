@@ -3,7 +3,7 @@ import axios from 'axios';
 const canonical = (obj:any) => {
   const keys = new Set();
   JSON.stringify(obj, (key, value) => (keys.add(key), value));
-  return JSON.stringify(obj, Array.from(keys).sort());
+  return JSON.stringify(obj, Array.from(keys).sort() as string[]);
 }
 
 const handleRequest = async(config:any, requestData:any, options:any, mocks:any) => {
@@ -17,7 +17,7 @@ const handleRequest = async(config:any, requestData:any, options:any, mocks:any)
   const restData = {...requestData};
 
   const [path,query] = config.url.split('?');
-  let url = path.replace(/:([^\/]+)/, (_,match) => {
+  let url = path.replace(/:([^\/]+)/, (_:string,match:string) => {
     const value = restData[match];
     delete restData[match]
     return value;
@@ -26,7 +26,7 @@ const handleRequest = async(config:any, requestData:any, options:any, mocks:any)
   const data = config.method !== 'GET' ? restData : {};
 
   if(query) {
-    query.split(',').forEach(name => {
+    query.split(',').forEach((name:string) => {
       params[name] = requestData[name];
     });
   }

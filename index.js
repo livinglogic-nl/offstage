@@ -13,10 +13,27 @@ const generate = useGenerate(services, mocks);
 const mount = useMount(services, mocks);
 const override = useOverride();
 
+const factory = (defaultValues) => 
+  new Proxy({}, {
+    get(obj,key) {
+      return (init) => {
+        const result = {
+          ...defaultValues,
+          ...init,
+        }
+        Object.defineProperty(result, 'x-os-type', {
+          value: key,
+        });
+        return result;
+      }
+    },
+  });
+
 module.exports = {
   create,
   mock,
   generate,
   mount,
   override,
+  factory,
 }

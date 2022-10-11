@@ -16,7 +16,9 @@ mock('example.hello', {}, { message: 'Hello world!' });
 
       'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.hello()).message
+(async() => {
+  document.body.innerHTML = (await example.hello()).message
+})();
       `,
     }, async({ baseURL, sandboxDir }) => {
         await import(`${sandboxDir}/src/offstage/mock.js`);
@@ -41,7 +43,9 @@ mock('example.hello', { subject:'something else' }, { message: 'Hello something 
 
       'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.hello({ subject:'something else' })).message
+(async() => {
+  document.body.innerHTML = (await example.hello({ subject:'something else' })).message
+})();
       `,
     }, async({ baseURL, sandboxDir }) => {
         await import(`${sandboxDir}/src/offstage/mock.js`);
@@ -68,7 +72,9 @@ mock('example.getFoo', { id: 2 }, { name: 'Baz' });
 
       'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.getFoo({ id:2 })).name
+(async() => {
+  document.body.innerHTML = (await example.getFoo({ id:2 })).name
+})();
       `,
     }, async({ baseURL, sandboxDir }) => {
         await import(`${sandboxDir}/src/offstage/mock.js`);
@@ -95,7 +101,9 @@ mock('example.getFoo', { id: 2 }, { name: 'Baz' });
 
       'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.getFoo({ id:2 })).name
+(async() => {
+  document.body.innerHTML = (await example.getFoo({ id:2 })).name
+})();
       `,
     }, async({ baseURL, sandboxDir }) => {
         await import(`${sandboxDir}/src/offstage/mock.js`);
@@ -120,7 +128,9 @@ mock('example.updateItem', { id: 1, responseType:'json', name:'somename' }, { na
 
       'src/main.ts': `
 import { example } from '@/offstage';
-document.body.innerHTML = (await example.updateItem({ id: 1, responseType:'json', name:'somename' })).name
+(async() => {
+  document.body.innerHTML = (await example.updateItem({ id: 1, responseType:'json', name:'somename' })).name
+})();
       `,
     }, async({ baseURL, sandboxDir }) => {
         await import(`${sandboxDir}/src/offstage/mock.js`);
