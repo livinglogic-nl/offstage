@@ -7,6 +7,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/livinglogic-nl/offstage.git"
+  },
   "devDependencies": {
     "@playwright/test": "^1.26.1",
     "json5": "^2.2.1"
