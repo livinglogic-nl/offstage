@@ -1,0 +1,45 @@
+<svg width="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<rect class="border" x="10" y="10" width="80" height="80" />
+<rect class="step1" x="22" y="26" width="16" height="16" />
+<rect class="step2" x="22" y="44" width="36" height="16" />
+<rect class="step3" x="22" y="62" width="54" height="16" />
+<text class="offstage" x="2" y="95" font-family="arial" font-size="22" font-weight="bold" letter-spacing="-3">OFFSTAGE</text>
+<style>
+
+.border {
+  fill: none;
+  stroke: black;
+  stroke-width: 20px;
+}
+.step1 {
+  fill: #444;
+}
+.step2 {
+  fill: #222;
+}
+.step3 {
+  fill: #000;
+}
+.offstage {
+  fill: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .border {
+    stroke: #333;
+  }
+  .step1 {
+    fill: #777;
+  }
+  .step2 {
+    fill: #555;
+  }
+  .step3 {
+    fill: #333;
+  }
+  .offstage {
+  }
+}
+
+</style>
+</svg>

@@ -1,5 +1,5 @@
-# Offstage 🔦
--- Acting like the back-end is there
+# ![Logo](logo.svg)
+-- Acting like a blazingly fast back-end 🔥
 
 ## Coming soon!
 I'm actively working on this but it is not ready yet. Please check back soon!
