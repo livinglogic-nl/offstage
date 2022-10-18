@@ -5,3 +5,7 @@ node_modules/
 tests
 reload.sh
 playwright.config.ts
+
+_site/
+docs/
+.jekyll-cache
