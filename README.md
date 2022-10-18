@@ -4,6 +4,13 @@
 ## Coming soon!
 I'm actively working on this but it is not ready yet. Please check back soon!
 
+Things I still need to do:
+- sync via npx
+- vite plugin
+- finish documentation
+- integrate in first project
+- PACT testing
+
 # When to use
 
 Suppose you're working on a Front-End that calls into REST backend services, you might want to have:
@@ -16,41 +23,33 @@ Offstage generates all you need, just by specifying the mock data.
 
 ## Example
 
-The following mock data:
+Mock file:
 ```ts
 import { create, mock } from 'offstage';
 
-// create connects the api to the REST request
-create('service.hello', 'POST /say-hello');
+// connect the api to the REST request
+create('example.hello', 'POST /say-hello');
 
-// mock mocks the data transfer
-mock('service.hello', {}, { message: 'Hello world!' });
-mock('service.hello', { subject:'something specific' }, { message: 'Hello something specific!' });
+// mock the data transfer
+mock('example.hello', {}, { message: 'Hello world!' });
+mock('example.hello', { subject:'something specific' }, { message: 'Hello something specific!' });
 ```
 
-Would generate:
-
-1. an Axios powered TypeScript api (that also works offline)
+Use in application:
 ```ts
-import { service } from '@/offstage';
-await service.hello(); // returns { message: 'Hello world!' }
-await service.hello({ subject:'something specific' }); // returns { message: 'Hello something specific!' }
+import { example } from '@/offstage';
 
+await example.hello(); // { message: 'Hello world!' }
+await example.hello({ subject:'something specific' }); // { message: 'Hello something specific!' }
 ```
 
-2. pluggable Playwright routes:
+Use in Playwright:
 ```ts
 import { mount } from 'offstage';
 
-test.beforeEach(async({ page }) => {
+test('Clicking the button calls hello method and renders result message', async({ page }) => {
   await mount(page)
-  await page.click('button.specific');
-  await page.waitForSelector('"Hello something specific!'");
+  await page.click('button');
+  await page.waitForSelector('"Hello something specific!"');
 });
 ```
-3. PACT-test files for backend:
-```
-// TODO: summary of a pact file
-
-```
-
