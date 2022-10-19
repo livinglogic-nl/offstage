@@ -18,7 +18,7 @@ Offstage uses mock data to connect and simulate the backend.
 - 🤝 PACT tests. Ensuring compatibility with backend (coming soon!)
 
 ## Surprising bonus: dev speed boost ⚡️
-I started to prevent repeating myself (reuse mock data for both Playwright and PACT).  
+I started this project to prevent repeating myself (reuse mock data for both Playwright and PACT).  
 Dev speed was not a goal at all but seems to have improved dramatically by using Offstage.
 
 
