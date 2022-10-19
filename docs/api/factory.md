@@ -25,7 +25,7 @@ mock('example.getTodos', {}, [
 ```
 ```ts
 // src/main.ts
-import { example, TodoItem } from '@offstage';
+import { example, TodoItem } from '@/offstage';
 const todos:TodoItem[] = await example.getTodos();
 // [ { id:1, text:'todo text' }, { id:1, text:'buy cheese' } ]
 ```
