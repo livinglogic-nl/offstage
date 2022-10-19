@@ -39,8 +39,6 @@ import { example } from '@/offstage';
 })();
     `,
   }, async({ baseURL, sandboxDir }) => {
-      await import(`${sandboxDir}/src/offstage/mock.js`);
-
       await page.goto(baseURL);
       await page.waitForSelector('"Hello something else!"');
   });

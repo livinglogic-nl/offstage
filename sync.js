@@ -7,7 +7,7 @@ const sourceDir = `${rootDir}/src`;
 const { generate } = require('./index.js');
 
 const tsFile = rootDir + '/src/offstage/mock.ts';
-const jsFile = rootDir + '/src/offstage/mock.js'
+const jsFile = rootDir + '/src/offstage/mock.cjs'
 
 const convertMockToJavascript = async() => {
   await esbuild.build({
@@ -25,7 +25,7 @@ const writeApiFile = async() => {
     .filter(key => key.includes('/tmp/'))
     .forEach(key => delete require.cache[key])
 
-  require(rootDir + '/src/offstage/mock.js')
+  require(rootDir + '/src/offstage/mock.cjs')
   fs.writeFileSync(`${sourceDir}/offstage/index.ts`, generate());
 }
 
