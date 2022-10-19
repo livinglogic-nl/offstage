@@ -5,7 +5,6 @@
 I'm actively working on this but it is not ready yet. Please check back soon!
 
 Things I still need to do:
-- sync via npx
 - vite plugin
 - integrate in first project
 
