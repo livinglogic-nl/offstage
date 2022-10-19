@@ -1,6 +1,6 @@
 ---
 layout: default
-title: create
+title: create()
 parent: API
 nav_order: 1
 ---
@@ -21,7 +21,7 @@ For example: `GET /hello` would configure a request method `GET` and a path of `
 
 
 ### How is data sent?
-1. By default:
+1. **default**
   - `GET` sends data through url query parameters.
   - `POST,PATCH,PUT and DELETE` sends data through request body. (JSON)
 2. **path parameters** colon prefixed fields in the path segment will be inserted there. `/some/:id`
@@ -31,14 +31,17 @@ For example: `GET /hello` would configure a request method `GET` and a path of `
 ## Examples
 
 ```ts
+import { create } from 'offstage';
 create('example.hello', 'POST /hello');
 ```
 ```ts
 // path params
+import { create } from 'offstage';
 create('example.hello', 'POST /hello/:foo/:bar');
 ```
 ```ts
 // query params
+import { create } from 'offstage';
 create('example.hello', 'POST /hello?foo,bar');
 ```
 

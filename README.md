@@ -7,19 +7,20 @@ I'm actively working on this but it is not ready yet. Please check back soon!
 Things I still need to do:
 - sync via npx
 - vite plugin
-- finish documentation
 - integrate in first project
-- PACT testing
 
-# When to use
+## What is Offstage?
 
-Suppose you're working on a Front-End that calls into REST backend services, you might want to have:
-- ⚡️ Dev-time mocking (for playing around while developing)
-- 🚀 Axios powered TypeScript API (for making the requests)
-- 🎭 Playwright route mocking (for integration testing the final build)
-- 🤝 Pact tests (for ensuring compatability with the backend)
+Offstage uses mock data to connect and simulate the backend.
+- 🚀 Typed request API. With instant responses during development.
+- 🎭 Playwright routes. With override for testing specific scenarios
+- 🤝 PACT tests. Ensuring compatibility with backend (coming soon!)
 
-Offstage generates all you need, just by specifying the mock data.
+## Surprising bonus: dev speed boost ⚡️
+I started to prevent repeating myself (reuse mock data for both Playwright and PACT).  
+Dev speed was not a goal at all but seems to have improved dramatically by using Offstage.
+
+## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
 
 ## Example
 
