@@ -20,9 +20,9 @@ import { example } from '@/offstage';
   document.body.innerHTML = (await example.hello()).message
 })();
       `,
-    }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+    }, async({ baseURL }) => {
         const { mount } = await import(`../index.js`);
+
         await mount(page);
         await Promise.all([
           page.goto(baseURL),
@@ -47,8 +47,7 @@ import { example } from '@/offstage';
   document.body.innerHTML = (await example.hello({ subject:'something else' })).message
 })();
       `,
-    }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+    }, async({ baseURL }) => {
         const { mount } = await import(`../index.js`);
 
         await mount(page);
@@ -76,8 +75,7 @@ import { example } from '@/offstage';
   document.body.innerHTML = (await example.getFoo({ id:2 })).name
 })();
       `,
-    }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+    }, async({ baseURL }) => {
         const { mount } = await import(`../index.js`);
 
         await mount(page);
@@ -105,8 +103,7 @@ import { example } from '@/offstage';
   document.body.innerHTML = (await example.getFoo({ id:2 })).name
 })();
       `,
-    }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+    }, async({ baseURL }) => {
         const { mount } = await import(`../index.js`);
 
         await mount(page);
@@ -132,8 +129,7 @@ import { example } from '@/offstage';
   document.body.innerHTML = (await example.updateItem({ id: 1, responseType:'json', name:'somename' })).name
 })();
       `,
-    }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+    }, async({ baseURL }) => {
         const { mount } = await import(`../index.js`);
 
         await mount(page);

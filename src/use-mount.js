@@ -1,7 +1,9 @@
 const useMock = require('./use-mock');
 
-
 module.exports = (services, mocks) => async(page) => {
+  const workdir = process.env.OFFSTAGE_SANDBOX_DIR ?? process.cwd();
+  require(workdir + '/src/offstage/mock.cjs');
+
   await page.addInitScript(() => window.offstagePlaywright = true);
   page.overrides = {};
 

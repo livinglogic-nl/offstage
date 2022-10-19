@@ -40,6 +40,7 @@ const installNodeModulesAndLinkOffstage = async() => {
 }
 
 const runVite = async(customFiles:Record<string,string>, callback:Function) => {
+  process.env.OFFSTAGE_SANDBOX_DIR = sandboxDir;
   await resetSandbox();
   await addCustomFiles(customFiles);
   await installNodeModulesAndLinkOffstage();
