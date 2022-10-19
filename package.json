@@ -17,6 +17,7 @@
     "json5": "^2.2.1"
   },
   "dependencies": {
+    "chokidar": "^3.5.3",
     "esbuild": "^0.15.10"
   }
 }

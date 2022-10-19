@@ -20,12 +20,13 @@ mkdir src/offstage
 ### Optional Vite plugin
 Update `vite.config.ts` to automatically sync on mock changes:
 ```ts
-import { offstageVitePlugin } from 'offstage'
+import { vitePluginOffstage } from 'offstage';
 
 export default defineConfig({
   ...
   plugins: [
-    offstageVitePlugin(),
+    ...
+    vitePluginOffstage(),
   ],
 })
 

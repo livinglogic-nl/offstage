@@ -4,6 +4,8 @@ const useGenerate = require('./src/use-generate.js');
 const useMount = require('./src/use-mount.js');
 const useOverride = require('./src/use-override.js');
 
+const vitePluginOffstage = require('./vite-plugin.js');
+
 const services = {};
 const mocks = {};
 
@@ -36,4 +38,6 @@ module.exports = {
   mount,
   override,
   factory,
+
+  vitePluginOffstage,
 }
