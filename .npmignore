@@ -4,6 +4,7 @@ node_modules/
 /playwright/.cache/
 tests
 reload.sh
+logo.svg
 playwright.config.ts
 
 _site/
