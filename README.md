@@ -1,13 +1,6 @@
 # ![Logo](logo.svg)
 -- Acting like a blazingly fast back-end 🔥
 
-
-## Coming soon!
-I'm actively working on this but it is not ready yet. Please check back soon!
-
-Things I still need to do:
-- integrate in first project
-
 ## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
 
 ## What is Offstage?
@@ -21,6 +14,8 @@ Offstage uses mock data to connect and simulate the backend.
 I started this project to prevent repeating myself (reuse mock data for both Playwright and PACT).  
 Dev speed was not a goal at all but seems to have improved dramatically by using Offstage.
 
+## Demo
+https://user-images.githubusercontent.com/59414067/197384608-43a81496-47bc-4f32-8ad9-83664b9af0af.mp4
 
 ## Example
 
