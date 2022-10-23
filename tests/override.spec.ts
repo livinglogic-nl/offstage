@@ -20,7 +20,7 @@ import { example } from '@/offstage';
 })();
       `,
     }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+        await import(`${sandboxDir}/src/offstage/mock.cjs`);
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 
@@ -49,7 +49,7 @@ import { example } from '@/offstage';
 })();
       `,
     }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.js`);
+        await import(`${sandboxDir}/src/offstage/mock.cjs`);
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 

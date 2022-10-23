@@ -15,10 +15,10 @@ const renderMethod = (serviceName, methodName, methodConfig, mocks) => {
   const requestType = detectType(...Object.values(mocks).map(m => m.request));
   const responseType = detectType(...Object.values(mocks).map(m => m.response));
   return `
-async ${methodName}(request:${requestType}, options = {}):Promise<${responseType}> {
+async ${methodName}(request:${requestType}):Promise<${responseType}> {
     const config = ${json5.stringify(config)}
     const mocks = (import.meta as any).env.DEV ? ${json5.stringify(responseOnly(mocks))} : null;
-    return handleRequest(config, request, options, mocks);
+    return handleRequest(config, request, mocks);
   },
 `.trim()
 }
