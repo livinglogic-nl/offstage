@@ -8,13 +8,13 @@ const canonical = (obj:any) => {
 
 const isPlaywright = () => ('offstagePlaywright' in window);
 
-const mockResponse = async(requestData:any, options:any, mocks:any) => {
+const mockResponse = async(requestData:any, mocks:any) => {
   const requestSignature = JSON.stringify(requestData);
   const response = mocks[requestSignature] ?? Object.values(mocks)[0];
-  return options.fullResponse ? { data:response } : response;
+  return response;
 }
 
-const restResponse = async(config:any, requestData:any, options:any) => {
+const restResponse = async(config:any, requestData:any) => {
   const restData = {...requestData};
   const [path,query] = config.url.split('?');
   let url = path.replace(/:([^\/]+)/, (_:string,match:string) => {
@@ -42,10 +42,10 @@ const restResponse = async(config:any, requestData:any, options:any) => {
     params,
     data,
   });
-  return options.fullResponse ? result : result.data;
+  return result.data;
 }
 
-const jsonrpcResponse = async(config:any, requestData:any, options:any) => {
+const jsonrpcResponse = async(config:any, requestData:any) => {
   const restData = {...requestData};
   const headers = config.headers || {};
   if(isPlaywright()) {
@@ -65,15 +65,15 @@ const jsonrpcResponse = async(config:any, requestData:any, options:any) => {
       params: restData,
     },
   });
-  return options.fullResponse ? result : result.data.result;
+  return result.data.result;
 }
 
-const handleRequest = async(config:any, requestData:any, options:any, mocks:any) => {
+const handleRequest = async(config:any, requestData:any, mocks:any) => {
   if(mocks && !isPlaywright()) {
-    return mockResponse(requestData, options, mocks);
+    return mockResponse(requestData, mocks);
   }
   if(config.method === 'JSONRPC') {
-    return jsonrpcResponse(config, requestData, options);
+    return jsonrpcResponse(config, requestData);
   }
-  return restResponse(config, requestData, options);
+  return restResponse(config, requestData);
 }
