@@ -2,7 +2,7 @@
 layout: default
 title: mount()
 parent: API
-nav_order: 3
+nav_order: 4
 ---
 
 Use `mount()` to add routes for all the mocks to a Playwright page.

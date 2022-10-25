@@ -2,7 +2,7 @@
 layout: default
 title: factory()
 parent: API
-nav_order: 2
+nav_order: 3
 ---
 
 Use `factory()` to create a factory function that returns typed objects.
