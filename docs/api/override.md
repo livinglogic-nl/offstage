@@ -8,29 +8,59 @@ nav_order: 5
 Use `override()` to override a response for a specific Playwright test.
 
 ```ts
-function override(page:any, serviceMethodSignature:string, request:any, response:any):void;
+function override(
+  page:any, // The playwright page that should get the routes
+  serviceMethodSignature:string, // The `serviceMethodSignature` to override
+  handler:(args:OverrideHandlerArgs) => any // the override handler (see below)
+):void;
+```
+```ts
+interface OverrideHandlerArgs {
+  requestData:any; // the data sent with this request
+  responseData:any; // the response data that would have been returned normally
+}
 ```
 
-- **page**  
-  The playwright page that should get the routes
-
-- **serviceMethodSignature**  
-  Should match a `serviceMethodSignature` that was used in `create()`.
-
-- **request**
-Sample of the request data
-
-- **response**
-Sample of the response data
-
-## Example
+## Examples
 
 ```ts
 import { test, expect } from '@playwright/test';
 import { mount } from 'offstage';
 
-test('testing functionality', async({page}) => {
+test('Just override the response', async({page}) => {
   await mount(page);
-  await override(page, 'example.hello', {}, { message:'bye world?' });
+  await override(page, 'example.hello', () => ({ message:'bye world?' }));
+});
+```
+
+```ts
+import { test, expect } from '@playwright/test';
+import { mount } from 'offstage';
+
+test('Reuse response data', async({page}) => {
+  await mount(page);
+  await override(page, 'example.hello', ({ responseData }) => ({
+    ...responseData,
+    message:'bye world?'
+  }));
+});
+```
+
+```ts
+import { test, expect } from '@playwright/test';
+import { mount } from 'offstage';
+
+test('Act on request data', async({page}) => {
+  await mount(page);
+  await override(page, 'example.hello', ({ requestData, responseData }) => {
+    if(requestData.someFlag) {
+      return {
+        ...responseData,
+        message:'bye world?'
+      }
+    }
+    return responseData;
+  });
+  }));
 });
 ```

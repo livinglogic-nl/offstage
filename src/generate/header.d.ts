@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const canonical = (obj:any) => {
+  if(obj === undefined) { return '{}'; }
   const keys = new Set();
   JSON.stringify(obj, (key, value) => (keys.add(key), value));
   return JSON.stringify(obj, Array.from(keys).sort() as string[]);

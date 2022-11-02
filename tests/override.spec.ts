@@ -5,7 +5,7 @@ test.describe.configure({ mode: 'serial' });
 
 
 test.describe('Override', () => {
-  test('Override response is preferred over default mock response', async({page}) => {
+  test('Override overrides the default response', async({page}) => {
     await runVite({
       'src/offstage/mock.ts': `
 import { create, mock } from 'offstage';
@@ -24,14 +24,14 @@ import { example } from '@/offstage';
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 
-        override(page, 'example.hello', {}, { message: 'Hello override!' });
+        override(page, 'example.hello', () => ({ message: 'Hello override!' }));
 
         await page.goto(baseURL);
         await page.waitForSelector('"Hello override!"');
     });
   });
 
-  test('Override response function allows reuse of default mock response', async({page}) => {
+  test('Override allows reuse of default mock response', async({page}) => {
     await runVite({
       'src/offstage/mock.ts': `
 import { create, mock } from 'offstage';
@@ -53,15 +53,54 @@ import { example } from '@/offstage';
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 
-        override(page, 'example.hello', {}, ({ defaultResponse }) => {
-          return {
-            ...defaultResponse,
+        override(page, 'example.hello', ({ responseData }) => ({
+            ...responseData,
             message: 'Hello response function!',
-          };
-        });
+        }));
 
         await page.goto(baseURL);
         await page.waitForSelector('"Hello response function!"');
+    });
+  });
+
+  test('Override can use requestData to finetune response', async({page}) => {
+    await runVite({
+      'src/offstage/mock.ts': `
+import { create, mock } from 'offstage';
+create('example.hello', 'POST /say-hello');
+mock('example.hello', {}, { message: 'Hello world!' });
+mock('example.hello', { subject:'something else' }, { message: 'Hello something else!' });
+      `,
+
+      'src/main.ts': `
+import { example } from '@/offstage';
+(async() => {
+  if(location.href.includes('/alpha')) {
+    document.body.innerHTML = (await example.hello({})).message
+  }
+  if(location.href.includes('/bravo')) {
+    document.body.innerHTML = (await example.hello({ subject:'something else' })).message
+  }
+})();
+      `,
+    }, async({ baseURL, sandboxDir }) => {
+        await import(`${sandboxDir}/src/offstage/mock.cjs`);
+        const { mount, override } = await import(`../index.js`);
+        await mount(page);
+
+        override(page, 'example.hello', ({ requestData, responseData }) => {
+          if(requestData.subject !== undefined) {
+            return {
+              message: 'nice, you passed a subject!',
+            }
+          }
+          return responseData;
+        });
+        await page.goto(`${baseURL}/alpha`);
+        await page.waitForSelector('"Hello world!"');
+
+        await page.goto(`${baseURL}/bravo`);
+        await page.waitForSelector('"nice, you passed a subject!"');
     });
   });
 });

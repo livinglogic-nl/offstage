@@ -11,12 +11,13 @@ module.exports = (services, mocks) => async(page) => {
     const key = request.headers()['x-offstage-data'];
     const matchedMocks = {
       ...mocks[serviceMethodSignature],
-      ...page.overrides[serviceMethodSignature],
     };
-    const response = matchedMocks[key]?.response ?? Object.values(matchedMocks)[0].response
-    if(typeof response === 'function') {
-      return response({
-        defaultResponse: mocks[serviceMethodSignature].response,
+    let response = matchedMocks[key]?.response ?? Object.values(matchedMocks)[0].response
+    const overrideHandler = page.overrides[serviceMethodSignature];
+    if(overrideHandler) {
+      response = overrideHandler({
+        requestData: JSON.parse(key),
+        responseData: response,
       });
     }
     return response;
