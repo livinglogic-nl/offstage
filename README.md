@@ -1,4 +1,4 @@
-# ![Logo](logo.svg)
+# ![Logo](docs/logo.png)
 -- Acting like a blazingly fast back-end 🔥
 
 ## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
