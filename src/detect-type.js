@@ -1,5 +1,5 @@
 const OBJ = 'x-os-obj'; // for detecting an object
-const TYPE = 'x-os-type'; // fot detecting a typed object
+const TYPE = 'x-os-type'; // for detecting a typed object
 
 const ARR = 'x-os-arr'; // for detecting an array
 const ATOMS = 'x-os-atoms'; // for detecting atom values (string, number, boolean, null)
@@ -23,21 +23,21 @@ const nodeAtoms = (node) => {
   return node[ATOMS];
 }
 
-const detectVariants = (sample, node) => {
+const detectVariants = (sample, node, forceExplicit) => {
   node[HITS]++;
   const type = detectSingleType(sample);
   if(type === 'array') {
     const n = subNode(node, ARR);
-    sample.forEach(subSample => detectVariants(subSample,n));
+    sample.forEach(subSample => detectVariants(subSample, n, forceExplicit));
   } else if(type === 'object') {
     const n = subNode(node, OBJ);
-    if(sample[TYPE]) {
+    if(!forceExplicit && sample[TYPE]) {
       n[TYPE] = sample[TYPE];
       return;
     }
     n[HITS]++;
     for(let key in sample) {
-      detectVariants(sample[key], subNode(n, key));
+      detectVariants(sample[key], subNode(n, key), forceExplicit);
     }
   } else {
     nodeAtoms(node).add(type);
@@ -68,9 +68,9 @@ const collectTypes = (node) => {
   return result;
 }
 
-const detectType = (...samples) => {
+const detectType = (samples, forceExplicit = false) => {
   const root = { [HITS]:0 }
-  samples.forEach(sample => detectVariants(sample, root));
+  samples.forEach(sample => detectVariants(sample, root, forceExplicit));
   return collectTypes(root).join('|')
 }
 

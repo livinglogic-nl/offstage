@@ -8,21 +8,24 @@ const vitePluginOffstage = require('./vite-plugin.js');
 
 const services = {};
 const mocks = {};
+const factorySamples = {};
 
 const create = useCreate(services);
 const mock = useMock(mocks);
-const generate = useGenerate(services, mocks);
+const generate = useGenerate(services, mocks, factorySamples);
 const mount = useMount(services, mocks);
 const override = useOverride();
 
-const factory = (defaultValues) => 
+const factory = (defaultValue) => 
   new Proxy({}, {
     get(obj,key) {
+      factorySamples[key] = [];
       return (init) => {
         const result = {
-          ...defaultValues,
+          ...defaultValue,
           ...init,
         }
+        factorySamples[key].push(result);
         Object.defineProperty(result, 'x-os-type', {
           value: key,
         });

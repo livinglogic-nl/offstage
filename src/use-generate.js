@@ -12,8 +12,8 @@ const renderMethod = (serviceName, methodName, methodConfig, mocks) => {
   const [method,url] = methodConfig.endpointSignature.split(' ');
   const config = { method, url }
 
-  const requestType = detectType(...Object.values(mocks).map(m => m.request));
-  const responseType = detectType(...Object.values(mocks).map(m => m.response));
+  const requestType = detectType(Object.values(mocks).map(m => m.request));
+  const responseType = detectType(Object.values(mocks).map(m => m.response));
   return `
 async ${methodName}(request:${requestType}):Promise<${responseType}> {
     const config = ${json5.stringify(config)}
@@ -29,11 +29,18 @@ const renderMethods = (serviceName, serviceConfig, mocks) => {
   }).join('\n');
 }
 
-module.exports = (services, mocks) => () => {
-  return header + Object.entries(services).map(([serviceName, serviceConfig]) => {
-    return `
-export const ${serviceName} = {
-  ${renderMethods(serviceName, serviceConfig, mocks)}
-}`
-  }).join('\n\n');
+module.exports = (services, mocks, factorySamples) => () => {
+  return [
+    header,
+    Object.entries(factorySamples).map(([typeName, samples]) => {
+      return `export interface ${typeName} ${detectType(samples, true)}`;
+
+    }).join('\n\n'),
+    Object.entries(services).map(([serviceName, serviceConfig]) => {
+      return `
+  export const ${serviceName} = {
+    ${renderMethods(serviceName, serviceConfig, mocks)}
+  }`
+    }).join('\n\n'),
+  ].join('\n');
 }

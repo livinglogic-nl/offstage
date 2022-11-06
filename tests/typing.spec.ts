@@ -34,6 +34,7 @@ mock('example.hello', { subject:'world' }, HelloResult({ message: 'Hello world!'
       `,
     }, async({ baseURL, sandboxDir }) => {
         const apiSourceCode = fs.readFileSync(`${sandboxDir}/src/offstage/index.ts`).toString();
+        expect(apiSourceCode).toContain('export interface HelloResult {message:string,state:string}');
         expect(apiSourceCode).toContain('Promise<HelloResult>');
     });
   });
