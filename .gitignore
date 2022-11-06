@@ -4,3 +4,4 @@ node_modules/
 /playwright/.cache/
 .jekyll-cache/
 _site/
+mock.cjs

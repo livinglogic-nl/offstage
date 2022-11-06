@@ -3,6 +3,7 @@ import runVite from './run-vite';
 
 test.describe.configure({ mode: 'serial' });
 
+const importMockCJS = async(sandboxDir) => import(`${sandboxDir}/node_modules/offstage/mock.cjs`);
 
 test.describe('Override', () => {
   test('Override overrides the default response', async({page}) => {
@@ -20,7 +21,7 @@ import { example } from '@/offstage';
 })();
       `,
     }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.cjs`);
+        await importMockCJS(sandboxDir);
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 
@@ -49,7 +50,7 @@ import { example } from '@/offstage';
 })();
       `,
     }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.cjs`);
+        await importMockCJS(sandboxDir);
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 
@@ -84,7 +85,7 @@ import { example } from '@/offstage';
 })();
       `,
     }, async({ baseURL, sandboxDir }) => {
-        await import(`${sandboxDir}/src/offstage/mock.cjs`);
+        await importMockCJS(sandboxDir);
         const { mount, override } = await import(`../index.js`);
         await mount(page);
 

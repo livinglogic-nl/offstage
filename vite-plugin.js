@@ -16,7 +16,6 @@ const offstageVitePlugin = () => {
   if(process.env.NODE_ENV === 'production') { return; }
   watcher = chokidar.watch('src/offstage', {
     ignored: [
-      'src/offstage/mock.cjs',
       'src/offstage/index.ts',
     ],
   });

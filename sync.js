@@ -2,12 +2,12 @@ const fs = require('fs');
 const esbuild = require('esbuild');
 
 const rootDir = process.cwd();
-const sourceDir = `${rootDir}/src`;
 
 const { generate } = require('./index.js');
 
-const tsFile = rootDir + '/src/offstage/mock.ts';
-const jsFile = rootDir + '/src/offstage/mock.cjs'
+const tsFile = `${rootDir}/src/offstage/mock.ts`;
+const apiFile = `${rootDir}/src/offstage/index.ts`;
+const jsFile = `${rootDir}/node_modules/offstage/mock.cjs`;
 
 const convertMockToJavascript = async() => {
   await esbuild.build({
@@ -18,6 +18,10 @@ const convertMockToJavascript = async() => {
     format: 'cjs',
     outfile: jsFile,
   });
+
+  let result = (await fs.promises.readFile(jsFile)).toString();
+  result = result.replace('"offstage"', '"."');
+  await fs.promises.writeFile(jsFile, result);
 }
 
 const writeApiFile = async() => {
@@ -25,8 +29,8 @@ const writeApiFile = async() => {
     .filter(key => key.includes('/tmp/'))
     .forEach(key => delete require.cache[key])
 
-  require(rootDir + '/src/offstage/mock.cjs')
-  fs.writeFileSync(`${sourceDir}/offstage/index.ts`, generate());
+  require(jsFile)
+  fs.writeFileSync(apiFile, generate());
 }
 
 if(fs.existsSync(tsFile)) {
