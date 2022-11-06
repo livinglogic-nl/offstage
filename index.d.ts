@@ -13,7 +13,7 @@ declare module "offstage" {
     handler:(args:OverrideHandlerArgs) => any
   ):void;
 
-  function factory(defaultValue:any):(init:Record<string,any>) => any;
+  function factory(defaultValue:any):any;
 
   function vitePluginOffstage():any;
 }
