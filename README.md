@@ -1,21 +1,33 @@
 # ![Logo](docs/logo.png)
 -- Acting like a blazingly fast back-end 🔥
 
-## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
+## Rationale
+Frontend and Backend should be able to develop simultaneously. At some point they do have to communicate with eachother. We would like to ensure compatibility.
 
-## What is Offstage?
+One option is to have the Backend generate a Frontend API. This has its drawbacks:
+- Frontend has to wait on Backend.
+- Does not provide mock data for testing purposes.
 
-Offstage uses mock data to connect and simulate the backend.
+## Meet Offstage
+
+Offstage uses mock data to connect to and simulate the backend.
+```mermaid
+graph TD
+  M[Mock file] -->|provide examples of traffic| O[[Offstage generates code]]
+  O --> A[TypeScript API]
+  O --> PW[Playwright routes]
+  O --> PA[PACT tests]
+```
 - 🚀 Typed request API. With instant responses during development.
 - 🎭 Playwright routes. With override for testing specific scenarios
 - 🤝 PACT tests. Ensuring compatibility with backend (coming real soon!)
+- 🔥 Dev speed. (no boilerplate + no waiting on backend) = blazingly fast development
 
-## ⚡️ dev speed boost ⚡️
-I started this project to prevent repeating myself, e.g. to reuse mock data for both Playwright and PACT.  
-Dev speed was not a goal but has been improved dramatically by using Offstage.
 
 ## Demo
 https://user-images.githubusercontent.com/59414067/197384608-43a81496-47bc-4f32-8ad9-83664b9af0af.mp4
+
+## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
 
 ## Example
 
