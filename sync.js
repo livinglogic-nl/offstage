@@ -25,10 +25,7 @@ const convertMockToJavascript = async() => {
 }
 
 const writeApiFile = async() => {
-  Object.keys(require.cache)
-    .filter(key => key.includes('/tmp/'))
-    .forEach(key => delete require.cache[key])
-
+  delete require.cache[jsFile];
   require(jsFile)
   fs.writeFileSync(apiFile, generate());
 }
