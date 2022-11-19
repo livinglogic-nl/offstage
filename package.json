@@ -18,6 +18,7 @@
   "dependencies": {
     "chokidar": "^3.5.3",
     "esbuild": "^0.15.10",
+    "fast-glob": "^3.2.12",
     "json5": "^2.2.1"
   }
 }

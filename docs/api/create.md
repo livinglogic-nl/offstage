@@ -45,3 +45,24 @@ import { create } from 'offstage';
 create('example.hello', 'POST /hello?foo,bar');
 ```
 
+
+### Optionally specify your own request and response interfaces
+Although `mock()` can generate the request and response interfaces,
+you can use `create()` in a generic fashion and specify the interfaces yourself.
+
+**Important!**
+The interfaces need to be defined in the src/offstage directory and be exported.
+```ts
+import { create } from 'offstage';
+
+export interface ExampleHelloRequest {
+  subject:string;
+}
+export interface ExampleHelloResponse {
+  message:string;
+}
+create<ExampleHelloRequest, ExampleHelloResponse>('example.hello', 'POST /hello');
+```
+
+
+
