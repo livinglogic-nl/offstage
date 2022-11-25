@@ -9,10 +9,10 @@ const capitalize = s => s.substring(0,1).toUpperCase() + s.substring(1);
 const responseOnly = obj => Object.entries(obj).reduce((a,v) => ({ ...a, [v[0]]: v[1].response }), {});
 
 const renderMethod = (methodName, requestType, responseType, method, url, mocks) => `
-  async ${methodName}(request:${requestType}):Promise<${responseType}> {
+  async ${methodName}(request:${requestType}, options:OffstageOptions = {}):Promise<${responseType}> {
     const config = ${json5.stringify({method,url})}
     const mocks = (import.meta as any).env.DEV ? ${json5.stringify(responseOnly(mocks))} : null;
-    return handleRequest(config, request, mocks);
+    return handleRequest(config, request, mocks, options);
   },`
 
 const factoryInterfaces = factorySamples =>

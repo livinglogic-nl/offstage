@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+import { Axios } from 'axios';
+
+
+interface OffstageOptions {
+  axios?: Axios;
+}
+
 const canonical = (obj:any) => {
   if(obj === undefined) { return '{}'; }
   const keys = new Set();
@@ -15,7 +22,7 @@ const mockResponse = async(requestData:any, mocks:any) => {
   return response;
 }
 
-const restResponse = async(config:any, requestData:any) => {
+const restResponse = async(config:any, requestData:any, axiosInstance:Axios) => {
   const restData = {...requestData};
   const [path,query] = config.url.split('?');
   let url = path.replace(/:([^\/]+)/, (_:string,match:string) => {
@@ -36,7 +43,7 @@ const restResponse = async(config:any, requestData:any) => {
   if(isPlaywright()) {
     headers['x-offstage-data'] = canonical(requestData);
   }
-  const result = await axios.request({
+  const result = await axiosInstance.request({
     ...config,
     headers,
     url,
@@ -46,16 +53,16 @@ const restResponse = async(config:any, requestData:any) => {
   return result.data;
 }
 
-const jsonrpcResponse = async(config:any, requestData:any) => {
+const jsonrpcResponse = async(config:any, requestData:any, axiosInstance:Axios) => {
   const restData = {...requestData};
   const headers = config.headers || {};
   if(isPlaywright()) {
     headers['x-offstage-data'] = canonical(requestData);
   }
   const { url } = config;
-  const [,endpoint,method] = url.match(/(.+\/)([^\/]+)$/);
+  const [,endpoint,method] = url.match(/(.*\/)([^\/]+)$/);
 
-  const result = await axios.request({
+  const result = await axiosInstance.request({
     ...config,
     method: 'POST',
     headers,
@@ -69,12 +76,13 @@ const jsonrpcResponse = async(config:any, requestData:any) => {
   return result.data.result;
 }
 
-const handleRequest = async(config:any, requestData:any, mocks:any) => {
+const handleRequest = async(config:any, requestData:any, mocks:any, options:OffstageOptions) => {
+  const axiosInstance = options.axios ?? axios;
   if(mocks && !isPlaywright()) {
     return mockResponse(requestData, mocks);
   }
   if(config.method === 'JSONRPC') {
-    return jsonrpcResponse(config, requestData);
+    return jsonrpcResponse(config, requestData, axiosInstance);
   }
-  return restResponse(config, requestData);
+  return restResponse(config, requestData, axiosInstance);
 }

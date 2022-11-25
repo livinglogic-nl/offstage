@@ -51,7 +51,7 @@ Although `mock()` can generate the request and response interfaces,
 you can use `create()` in a generic fashion and specify the interfaces yourself.
 
 **Important!**
-The interfaces need to be defined in the src/offstage directory and be exported.
+The interfaces must be named exports, and defined in some file in the `src/offstage` directory.
 ```ts
 import { create } from 'offstage';
 
