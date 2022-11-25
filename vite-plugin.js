@@ -13,18 +13,8 @@ const sync = async() => {
 }
 
 const offstageVitePlugin = () => {
-  const result = {
-      name: 'offstage-vite-plugin',
-      buildStart: {
-        sequential: true,
-        order: 'pre',
-        async handler() {
-          await sync();
-        },
-      },
-  }
   if(process.env.NODE_ENV === 'production') {
-    return result;
+    return {};
   }
 
   watcher = chokidar.watch('src/offstage', {
@@ -38,11 +28,21 @@ const offstageVitePlugin = () => {
     debounceId = setTimeout(sync, 500);
   });
 
-  result.buildEnd = () => {
-    if(watcher) {
-      watcher.close();
-      watcher = null;
-    }
+  const result = {
+    name: 'offstage-vite-plugin',
+    buildStart: {
+      sequential: true,
+      order: 'pre',
+      async handler() {
+        await sync();
+      },
+    },
+    buildEnd: {
+      if(watcher) {
+        watcher.close();
+        watcher = null;
+      }
+    },
   }
   return result;
 }
