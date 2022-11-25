@@ -82,9 +82,17 @@ const writeApiFile = async() => {
   fs.writeFileSync(apiFile, generate( await getCustomRequestResponses() ));
 }
 
-if(fs.existsSync(tsFile)) {
-  convertMockToJavascript().then(writeApiFile);
-} else {
-  console.log(`Could not find ${tsFile}.`)
+const sync = async() => {
+  if(!fs.existsSync(tsFile)) {
+    console.log(`Could not find ${tsFile}.`)
+    process.exit(1);
+  }
+  await convertMockToJavascript();
+  await writeApiFile();
 }
 
+if (require.main === module) {
+  sync();
+} else {
+  module.exports = sync;
+}
