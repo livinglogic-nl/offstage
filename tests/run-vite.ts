@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 
-let viteRunningProcess = null;
+let viteRunningProcess:any = null;
 const killVite = () => {
   if(viteRunningProcess) {
     viteRunningProcess.kill();
@@ -45,20 +45,9 @@ const runVite = async(customFiles:Record<string,string>, callback:Function) => {
   await addCustomFiles(customFiles);
   await installNodeModulesAndLinkOffstage();
 
-  try {
-    console.log(
-    child_process
-      .execFileSync('node', ['node_modules/offstage/sync.js'], { cwd:sandboxDir })
-      .toString()
-    );
-
-  } catch(e) {
-    console.log(e)
-  }
-
   viteRunningProcess = child_process.spawn('node', [ 'node_modules/.bin/vite' ], { cwd:sandboxDir });
 
-  let listeningCallback = null;
+  let listeningCallback:any = null;
   const listening = new Promise(ok => listeningCallback = ok);
   viteRunningProcess.stdout.on('data', (data:Buffer) => {
     if(listeningCallback && data.toString().includes(vitePort.toString())) {
