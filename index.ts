@@ -14,4 +14,5 @@ export const configure = useConfigure(state);
 export const service = useService();
 export const endpoint = useEndpoint(state);
 export const mount = useMount(state);
+export const factory = (defaultObject:any) => (override = {}) => ({...defaultObject, ...override});
 
