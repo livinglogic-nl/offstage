@@ -11,7 +11,7 @@ npm i offstage
 **2. define service**
 ```ts
 // src/example-service.ts
-import { endpoint } from 'offstage'
+import { service, endpoint } from 'offstage'
 
 interface FooRequest {
   id:number;
@@ -21,12 +21,12 @@ interface FooResponse {
   message:string;
 }
 
-export const exampleService {
+export const { exampleService } = service({
   foo: endpoint<FooRequest, FooResponse>('GET /foo', ({ id }) => {
     return {
       message: `some mock data for id: ${id}` }
   }),
-}
+});
 ```
 
 **3. use service**
