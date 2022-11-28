@@ -1,5 +1,5 @@
 import { getConfig } from "./get-config.js";
-import { OffstageConfiguratorContext, OffstageState } from "./types";
+import { OffstageConfig, OffstageConfiguratorContext, OffstageState } from "./types";
 
 const allowMock = () => {
   try {
@@ -29,7 +29,7 @@ const isProduction = () => {
 }
 
 export default (state:OffstageState) => {
-  const handleRestRequest = async(endpoint:string, requestData:any, configureContext:OffstageConfiguratorContext) => {
+  const handleRestRequest = async(endpoint:string, requestData:any, config:OffstageConfig) => {
     const restData = {...requestData};
     const [method,pathPlusQuery] = endpoint.split(' ');
     const [path,query] = pathPlusQuery.split('?');
@@ -47,7 +47,6 @@ export default (state:OffstageState) => {
       });
     }
 
-    const config = await getConfig(state, configureContext);
     config.method = method;
     if(method !== 'GET') {
       config.body = JSON.stringify(restData);
@@ -61,6 +60,24 @@ export default (state:OffstageState) => {
     return resultData;
   }
 
+  const handleJsonRpcRequest = async(endpoint:string, requestData:any, config:OffstageConfig) => {
+    const restData = {...requestData};
+    const [_,url] = endpoint.split(' ');
+
+    const [,path,method] = url.match(/(.*\/)([^\/]+)$/)!;
+    config.method = 'POST';
+    config.body = JSON.stringify({
+      jsonrpc: '2.0',
+      method,
+      params: restData,
+    });
+
+    const finalUrl = `${config.baseURL ?? ''}${path}`;
+    const result = await fetch(finalUrl, config);
+    const resultData = await result.json();
+    return resultData.result;
+  }
+
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType) => {
     const func = async(requestData:ReqType):Promise<ResType> => {
       if(allowMock() && !isProduction()) {
@@ -72,10 +89,13 @@ export default (state:OffstageState) => {
         }
         return responseData;
       }
-      const configureContext:OffstageConfiguratorContext = {
+      const config = await getConfig(state, {
         serviceMethodName: (func as any).serviceMethodName,
+      });
+      if(endpoint.startsWith('JSONRPC')) {
+        return handleJsonRpcRequest(endpoint, requestData, config);
       }
-      return handleRestRequest(endpoint, requestData, configureContext);
+      return handleRestRequest(endpoint, requestData, config);
     }
     func.override = (handler:any) => {
       (func as any).overrideHandler = handler;
