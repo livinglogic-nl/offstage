@@ -72,11 +72,9 @@ export default (state:OffstageState) => {
         }
         return responseData;
       }
-
       const configureContext:OffstageConfiguratorContext = {
         serviceMethodName: (func as any).serviceMethodName,
       }
-      console.log(configureContext)
       return handleRestRequest(endpoint, requestData, configureContext);
     }
     func.override = (handler:any) => {
