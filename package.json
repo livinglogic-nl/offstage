@@ -1,6 +1,6 @@
 {
-  "name": "os3",
-  "version": "1.0.0",
+  "name": "offstage",
+  "version": "3.0.0",
   "description": "",
   "main": "index.ts",
   "scripts": {},
