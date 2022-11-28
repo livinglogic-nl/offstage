@@ -1,6 +1,33 @@
 import { getConfig } from "./get-config.js";
 import { OffstageConfiguratorContext, OffstageState } from "./types";
 
+const allowMock = () => {
+  try {
+    if((window as any).isOffstagePlaywright) {
+      return false;
+    }
+  } catch(_) {}
+  return true;
+}
+
+const isImportFromTest = () => {
+  try {
+    if(process.env.OFFSTAGE_IMPORT_FROM_TEST !== undefined) {
+      return true;
+    }
+  } catch(_) {}
+  return false;
+}
+
+const isProduction = () => {
+  try {
+    if(process.env.NODE_ENV === 'production') {
+      return true;
+    }
+  } catch(_) {}
+  return false;
+}
+
 export default (state:OffstageState) => {
   const handleRestRequest = async(endpoint:string, requestData:any, configureContext:OffstageConfiguratorContext) => {
     const restData = {...requestData};
@@ -36,17 +63,10 @@ export default (state:OffstageState) => {
 
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType) => {
     const func = async(requestData:ReqType):Promise<ResType> => {
-      let allowMock = true;
-      try {
-        if((window as any).isOffstagePlaywright) {
-          allowMock = false;
-        }
-      } catch(e) {
-      }
-      if(allowMock && process.env.NODE_ENV !== 'production') {
+      if(allowMock() && !isProduction()) {
         const summary = (obj:any) => JSON.stringify(obj).substring(0,255);
         const responseData = mock(requestData);
-        if(!process.env.OFFSTAGE_IMPORT_FROM_TEST) {
+        if(!isImportFromTest()) {
           console.debug(`[offstage] mocking ${endpoint}: ${summary(requestData)}`);
           console.debug('[offstage]', responseData);
         }
