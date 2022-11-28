@@ -1,9 +1,8 @@
-// @ts-nocheck
+import { OffstageConfigurator, OffstageState } from "./types";
 
-export default (state) => {
+export default (state:OffstageState) => {
   const configure = (configurators:OffstageConfigurator[]) => {
     state.configurators = configurators;
   }
-
   return configure;
 }

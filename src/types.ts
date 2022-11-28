@@ -8,7 +8,10 @@ export interface OffstageConfig {
   body?:string;
 }
 
-export type OffstageConfigurator = (context?:OffstageConfiguratorContext) => Promise<OffstageConfig>;
+export type OffstageConfiguratorAsync = (context:OffstageConfiguratorContext) => Promise<OffstageConfig|undefined>;
+export type OffstageConfiguratorSync = (context:OffstageConfiguratorContext) => OffstageConfig|undefined;
+
+export type OffstageConfigurator = OffstageConfiguratorSync|OffstageConfiguratorAsync;
 
 export interface OffstageState {
   configurators:OffstageConfigurator[];
