@@ -43,7 +43,24 @@ export default () => {
         }
         map[path][method] = config;
       } else {
-        console.log('TODO RPC')
+        const [,path, rpcMethod] = url.match(/(.+?)([^\/]+)$/);
+        if(!map[path]) {
+          map[path] = {};
+          await page.route('**'+path, async(route:any, request:any) => {
+            if(request.method() !== 'POST') { return route.continue(); }
+
+            const requestData = request.postDataJSON();
+            if(requestData.jsonrpc !== '2.0') { return route.continue(); }
+
+            const config = map[path][requestData.method];
+            if(config?.file === undefined) { return route.continue(); }
+
+            const loaded = await import(/* @vite-ignore */config.file);
+          });
+        }
+        map[path][rpcMethod] = config;
+        // console.log({path, rpcMethod, method,url})
+
       }
     }));
   }
