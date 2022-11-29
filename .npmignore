@@ -2,3 +2,4 @@ demo/
 src/
 fixup
 tsconfig*
+reload.sh
