@@ -7,7 +7,7 @@ export default () => {
   }
 
   const mount = async(page:any) => {
-    const findMountableRoutes = (await import(/* @vite-ignore */'./find-mountable-routes.js')).default;
+    const findMountableRoutes = (await import('./find-mountable-routes.js')).default;
     await page.addInitScript(() => {
       (window as any).isOffstagePlaywright = true;
     });
