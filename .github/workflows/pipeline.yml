@@ -10,7 +10,15 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+      - name: 'Workaround permissions issue'
+        run: chown $(whoami):$(whoami) -R .
+      - run: git config --global --add safe.directory /__w/offstage/offstage
       - run: npm ci
       - run: npm run build
       - run: chmod -R 0777 demo/vite
       - run: npm run test
+      - run: git rev-parse --git-dir
+      - run: npm run semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

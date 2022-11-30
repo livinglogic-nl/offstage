@@ -3,3 +3,5 @@ src/
 fixup
 tsconfig*
 reload.sh
+docs/
+utils/
