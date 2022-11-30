@@ -15,7 +15,6 @@ jobs:
       - run: git config --global --add safe.directory /__w/offstage/offstage
       - run: npm ci
       - run: npm run build
-      - run: chmod -R 0777 demo/vite
       - run: npm run test
       - run: git rev-parse --git-dir
       - run: npm run semantic-release
