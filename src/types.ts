@@ -6,6 +6,7 @@ export interface OffstageConfig {
   baseURL?:string;
   method?:string;
   body?:string;
+  headers?:Record<string,string>;
 }
 
 export type OffstageConfiguratorAsync = (context:OffstageConfiguratorContext) => Promise<OffstageConfig|undefined>;

@@ -7,6 +7,7 @@
     <button @click="patch(5)">PATCH 5</button>
     <button @click="deleet(6)">DELETE 6</button>
     <button @click="configBaseURL">config baseURL</button>
+    <button @click="configHeaders">config headers</button>
   </div>
 </template>
 <script setup lang="ts">
@@ -37,6 +38,22 @@ const deleet = async(nr:number) => {
 const configBaseURL = async() => {
   configure([
     () => ({ baseURL:'http://localhost:3000' }),
+  ]);
+  result.value = (await exampleService.getSquare({ nr:2 })).result
+}
+
+const configHeaders = async() => {
+  configure([
+    () => ({
+      headers: {
+        Authorization: 'Bearer foo',
+      },
+    }),
+    () => ({
+      headers: {
+        'x-foo-bar': 'Bar',
+      },
+    }),
   ]);
   result.value = (await exampleService.getSquare({ nr:2 })).result
 }
