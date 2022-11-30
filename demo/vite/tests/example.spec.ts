@@ -35,9 +35,13 @@ test('regular routes are mounted: DELETE', async ({ page }) => {
 
 test('can override request', async ({ page }) => {
   exampleService.getSquare.override(() => ({ result:999 }));
-
   await page.click('"GET 2"');
   await page.waitForSelector('"999"');
+});
+
+test('override is isolated per page', async ({ page }) => {
+  await page.click('"GET 2"');
+  await page.waitForSelector('"4"');
 });
 
 test('can configure baseURL', async ({ page }) => {

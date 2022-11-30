@@ -96,7 +96,9 @@ export default (state:OffstageState) => {
       return handleRestRequest(endpoint, requestData, config);
     }
     func.override = (handler:any) => {
-      (func as any).overrideHandler = handler;
+      state.currentContext!._offstageOverride[(func as any).serviceMethodName] = handler;
+      // console.log(state);
+      // (func as any).overrideHandler = handler;
     }
     return func;
   }

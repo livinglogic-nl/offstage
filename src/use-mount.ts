@@ -1,12 +1,11 @@
 import fs from 'fs';
 
-export default () => {
+export default (state:any) => {
   const getParamsObject = async(request:any) => {
     const { URLSearchParams } = await import('url');
     const query = request.url().split('?').pop();
     return Object.fromEntries( new URLSearchParams(query).entries() );
   }
-
 
   const injectOffstageProxy = (str:string):string => {
     return str.replace(`var import_offstage = require("offstage");`, `
@@ -42,17 +41,22 @@ var import_offstage = {
     }
   }
 
-  const getCallResult = async(config:any, requestData:any) => {
+  const getCallResult = async(config:any, requestData:any, overrides:any) => {
     const loaded = await loadModule(config.file);
     const serviceMethod = loaded[config.serviceName][config.methodName];
     let result = await serviceMethod(requestData);
-    if(serviceMethod.overrideHandler) {
-      result = await serviceMethod.overrideHandler(requestData, result);
+
+    const override = overrides[serviceMethod.serviceMethodName];
+    if(override) {
+      result = await override(requestData, result);
     }
     return result;
   }
 
   const mount = async(page:any) => {
+    page._offstageOverride = {};
+    state.currentContext = page;
+
     const findMountableRoutes = (await import('./find-mountable-routes.js')).default;
     await page.addInitScript(() => {
       (window as any).isOffstagePlaywright = true;
@@ -77,7 +81,7 @@ var import_offstage = {
               ? await getParamsObject(request)
               : request.postDataJSON();
 
-            const result = await getCallResult(config, requestData);
+            const result = await getCallResult(config, requestData, page._offstageOverride);
             route.fulfill({ body: JSON.stringify(result) });
           });
         }
@@ -95,7 +99,7 @@ var import_offstage = {
             const config = map[path][requestData.method];
             if(config?.file === undefined) { return route.continue(); }
 
-            const result = await getCallResult(config, requestData.params);
+            const result = await getCallResult(config, requestData.params, page._offstageOverride);
             route.fulfill({
               body: JSON.stringify({
                 jsonrpc: '2.0',
