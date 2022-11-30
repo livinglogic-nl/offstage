@@ -12,6 +12,7 @@ export default () => {
 var import_offstage = {
   service: (eps) => new Proxy(eps, { get: (obj, key) => obj[key] ?? obj }),
   endpoint: (_,mockFunction) => mockFunction,
+  factory: (defaultObject:any) => (override = {}) => ({...defaultObject, ...override}),
 }`.trim());
   }
 
