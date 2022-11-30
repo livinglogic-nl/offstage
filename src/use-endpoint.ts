@@ -84,8 +84,7 @@ export default (state:OffstageState) => {
         const summary = (obj:any) => JSON.stringify(obj).substring(0,255);
         const responseData = mock(requestData);
         if(!isImportFromTest()) {
-          console.debug(`[offstage] mocking ${endpoint}: ${summary(requestData)}`);
-          console.debug('[offstage]', responseData);
+          console.debug(`[offstage]`, endpoint, requestData, responseData);
         }
         return responseData;
       }
