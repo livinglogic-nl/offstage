@@ -32,11 +32,17 @@ var import_offstage = {
         outdir: 'out',
       });
       const outFile = result.outputFiles[0];
-      const sourceCode = injectOffstageProxy(outFile.text)
-        .replace('module.exports = __toCommonJS(example_service_exports);','')
-        + 'return __toCommonJS(example_service_exports)';
 
-      fs.writeFileSync('/tmp/esbuild-out.js', sourceCode);
+      const exportsRegex = /module.exports = __toCommonJS\((.+?)\);/
+      let sourceCode = injectOffstageProxy(outFile.text);
+      const match = sourceCode.match(exportsRegex);
+      if(!match) {
+        throw Error('Could not find module exports line.');
+      }
+
+      const [,returnSymbol] = match;
+      sourceCode = sourceCode.replace(exportsRegex, '')
+        + `return __toCommonJS(${returnSymbol})`;
       return (new Function(sourceCode))();
     }
   }
