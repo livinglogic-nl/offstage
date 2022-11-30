@@ -1,14 +1,23 @@
-# Offstage
+# ![](docs/logo.png)
+# Offstage. blazingly fast backend simulator
+
+Offstage is a Front-End solution to handle your Back-End integration:
+- 🚀 Easily define a TypeScript Request API
+- ⚡️ Mock data for development (stripped out of production build)
+- 🎭 Same mock data for Playwright (to test the production build)
+- 🦄 Mock data overrides (for testing specific scenarios)
+- 🤝 Coming soon: generates PACT tests to ensure Back-End compatability
+- 🔥 Small footprint (offstage adds ~2kb to your production build)
 
 
 # Getting started
 
-**1. install**
+## 1. Install
 ```bash
 npm i offstage
 ```
 
-**2. define service**
+## 2. Define service
 ```ts
 // src/example-service.ts
 import { service, endpoint } from 'offstage'
@@ -29,7 +38,7 @@ export const { exampleService } = service({
 });
 ```
 
-**3. use service**
+## 3. Use service
 ```ts
 // src/app.ts
 import exampleService from './example-service';
@@ -42,7 +51,7 @@ console.log(data); // { message:'some mock data for id: 2' }
 
 Your mock data gets stripped out of production build. To still use mock data in your tests, you can use mount. It will intercept requests and respond with your mock data.
 
-**4. intercept requests with mount**
+## 4. intercept requests with mount
 ```ts
 // tests/example.spec.ts
 import { mount } from 'offstage';
@@ -52,7 +61,7 @@ test.beforeEach(async(page) => {
 });
 ```
 
-**5. optionally override responses**
+## 5. optionally override responses
 ```ts
 // tests/example.spec.ts
 import { mount } from 'offstage';
