@@ -1,0 +1,16 @@
+name: Offstage Pipeline
+run-name: Build and test Offstage! 🚀
+on: [push]
+jobs:
+  Build-Test:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.28.0-focal
+      options: --user root
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run build
+      - run: chmod -R 0777 demo/vite
+      - run: npm run test

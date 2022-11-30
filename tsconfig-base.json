@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "inlineSourceMap": false,
     "lib": ["esnext", "dom"],
-    "listEmittedFiles": true,
+    "listEmittedFiles": false,
     "listFiles": false,
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
