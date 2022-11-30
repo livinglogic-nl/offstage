@@ -19,3 +19,11 @@ export interface OffstageState {
   currentContext?:any;
 }
 
+
+export type OffstageOverrideHandler = (requestData:any, responseData:any) => any;
+
+export interface OffstageEndpoint {
+  (requestData:any):Promise<any>;
+  override:(handler:OffstageOverrideHandler) => void;
+  serviceMethodName?:string;
+}

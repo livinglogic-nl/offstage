@@ -1,5 +1,5 @@
 import { getConfig } from "./get-config.js";
-import { OffstageConfig, OffstageConfiguratorContext, OffstageState } from "./types";
+import { OffstageConfig, OffstageConfiguratorContext, OffstageEndpoint, OffstageState } from "./types";
 
 const allowMock = () => {
   try {
@@ -79,7 +79,7 @@ export default (state:OffstageState) => {
   }
 
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType) => {
-    const func = async(requestData:ReqType):Promise<ResType> => {
+    const func:OffstageEndpoint = async(requestData:ReqType):Promise<ResType> => {
       if(allowMock() && !isProduction()) {
         const responseData = mock(requestData);
         if(!isImportFromTest()) {
@@ -97,8 +97,6 @@ export default (state:OffstageState) => {
     }
     func.override = (handler:any) => {
       state.currentContext!._offstageOverride[(func as any).serviceMethodName] = handler;
-      // console.log(state);
-      // (func as any).overrideHandler = handler;
     }
     return func;
   }
