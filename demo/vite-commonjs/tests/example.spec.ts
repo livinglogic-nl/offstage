@@ -46,3 +46,13 @@ test('can configure baseURL', async ({ page }) => {
     page.waitForRequest('http://localhost:3000/foo?nr=2'),
   ]);
 });
+
+test('can properly merge configurations', async ({ page }) => {
+  const [request] = await Promise.all([
+    page.waitForRequest(req => req.url().includes('/foo')),
+    page.click('"config headers"'),
+  ]);
+  const headers = request.headers();
+  expect(headers.authorization).toBe('Bearer foo');
+  expect(headers['x-foo-bar']).toBe('Bar');
+});
