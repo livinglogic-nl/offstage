@@ -1,4 +1,5 @@
 import fs from 'fs';
+
 export default () => {
   const getParamsObject = async(request:any) => {
     const { URLSearchParams } = await import('url');
@@ -32,7 +33,12 @@ var import_offstage = {
         outdir: 'out',
       });
       const outFile = result.outputFiles[0];
-      return eval(injectOffstageProxy(outFile.text));
+      const sourceCode = injectOffstageProxy(outFile.text)
+        .replace('module.exports = __toCommonJS(example_service_exports);','')
+        + 'return __toCommonJS(example_service_exports)';
+
+      fs.writeFileSync('/tmp/esbuild-out.js', sourceCode);
+      return (new Function(sourceCode))();
     }
   }
 
