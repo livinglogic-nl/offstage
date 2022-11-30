@@ -1,8 +1,8 @@
 name: Offstage Pipeline
-run-name: Build and test Offstage! 🚀
+run-name: Build and test and release Offstage! 🚀
 on: [push]
 jobs:
-  Build-Test:
+  Main:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.28.0-focal
