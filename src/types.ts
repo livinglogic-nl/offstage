@@ -27,3 +27,5 @@ export interface OffstageEndpoint {
   override:(handler:OffstageOverrideHandler) => void;
   serviceMethodName?:string;
 }
+
+export type OffstageService = Record<string,OffstageEndpoint>;
