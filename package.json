@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && sh ./fixup"
+    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && sh ./fixup",
+    "test": "node utils/test-all.js"
   },
   "keywords": [],
   "author": "",
