@@ -6,12 +6,12 @@ nav_order: 1
 
 # Getting started
 
-**1. install**
+## 1. Install
 ```bash
 npm i offstage
 ```
 
-**2. define service**
+## 2. Define service
 ```ts
 // src/example-service.ts
 import { service, endpoint } from 'offstage'
@@ -32,7 +32,7 @@ export const { exampleService } = service({
 });
 ```
 
-**3. use service**
+## 3. Use service
 ```ts
 // src/app.ts
 import exampleService from './example-service';
@@ -45,7 +45,7 @@ console.log(data); // { message:'some mock data for id: 2' }
 
 Your mock data gets stripped out of production build. To still use mock data in your tests, you can use mount. It will intercept requests and respond with your mock data.
 
-**4. intercept requests with mount**
+## 4. intercept requests with mount
 ```ts
 // tests/example.spec.ts
 import { mount } from 'offstage';
@@ -55,7 +55,7 @@ test.beforeEach(async(page) => {
 });
 ```
 
-**5. optionally override responses**
+## 5. optionally override responses
 ```ts
 // tests/example.spec.ts
 import { mount } from 'offstage';
@@ -97,4 +97,3 @@ configure([
 ```
 
 Offstage uses `fetch()` behind the scenes so you can refer to https://developer.mozilla.org/en-US/docs/Web/API/fetch for most of the options. 
-
