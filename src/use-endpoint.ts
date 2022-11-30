@@ -81,7 +81,6 @@ export default (state:OffstageState) => {
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType) => {
     const func = async(requestData:ReqType):Promise<ResType> => {
       if(allowMock() && !isProduction()) {
-        const summary = (obj:any) => JSON.stringify(obj).substring(0,255);
         const responseData = mock(requestData);
         if(!isImportFromTest()) {
           console.debug(`[offstage]`, endpoint, requestData, responseData);
