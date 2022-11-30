@@ -16,19 +16,9 @@ npm i offstage
 // src/example-service.ts
 import { service, endpoint } from 'offstage'
 
-interface FooRequest {
-  id:number;
-}
-
-interface FooResponse {
-  message:string;
-}
-
 export const { exampleService } = service({
-  foo: endpoint<FooRequest, FooResponse>('GET /foo', ({ id }) => {
-    return {
-      message: `some mock data for id: ${id}` }
-  }),
+  foo: endpoint<{id:number},{message:string}>('GET /foo',
+    ({ id }) => ({ message: `some mock data for id: ${id}` }),
 });
 ```
 
@@ -52,12 +42,14 @@ import { mount } from 'offstage';
 
 test.beforeEach(async(page) => {
   await mount(page);
+  // requests of 'GET /foo' are now intercepted
+  // using mock callback defined in step 2
 });
 ```
 
 ## 5. optionally override responses
 ```ts
-// tests/example.spec.ts
+// tests/override.spec.ts
 import { mount } from 'offstage';
 import { exampleService } from '../src/example-service.ts';
 
@@ -69,6 +61,8 @@ test('testing with an override', async({page}) => {
   exampleService.foo.override((requestData,responseData) => {
     return { ...responseData, message: 'override works!' };
   });
+  // requests of 'GET /foo' are now intercepted
+  // and responded with { message:'override works! }
 });
 ```
 # Configuration
