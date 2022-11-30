@@ -23,8 +23,5 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.9"
-  },
-  "peerDependencies": {
-    "playwright": "*"
   }
 }
