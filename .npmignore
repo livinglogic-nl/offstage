@@ -5,3 +5,4 @@ tsconfig*
 reload.sh
 docs/
 utils/
+.github

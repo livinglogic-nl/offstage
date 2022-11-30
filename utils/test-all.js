@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { testDemoModule, testDemoCommonjs } from './shared.js';
+import { shell, testDemoModule, testDemoCommonjs } from './shared.js';
 
 if(!fs.existsSync('demo/vite/node_modules')) {
   await shell('npm ci', 'demo/vite');
