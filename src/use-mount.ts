@@ -8,8 +8,8 @@ export default (state:any) => {
   }
 
   const injectOffstageProxy = (str:string):string => {
-    return str.replace(`var import_offstage = require("offstage");`, `
-var import_offstage = {
+    return str.replace(/var (.*) = require\("offstage"\);/g, (_,symbol) => `
+var ${symbol} = {
   service: (eps) => new Proxy(eps, { get: (obj, key) => obj[key] ?? obj }),
   endpoint: (_,mockFunction) => mockFunction,
   factory: (defaultObject) => (override = {}) => ({...defaultObject, ...override}),
