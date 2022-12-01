@@ -30,7 +30,7 @@ export default async() => {
   (await entriesWithOffstage()).forEach(async(fc:FileContent) => {
     const { content } = fc;
 
-    for(let m of content.matchAll(/endpoint<.+?,.+?>/g)) {
+    for(let m of content.matchAll(/endpoint</g)) {
       const methodName = rewind(content, m.index!, ' ', ':');
       const exportConst = content.lastIndexOf('export const {', m.index);
       const closing = content.indexOf('}', exportConst);
