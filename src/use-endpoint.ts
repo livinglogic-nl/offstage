@@ -75,6 +75,11 @@ export default (state:OffstageState) => {
     const finalUrl = `${config.baseURL ?? ''}${path}`;
     const result = await fetch(finalUrl, config);
     const resultData = await result.json();
+    if(resultData.error) {
+      const e = Error('RPC error');
+      Object.assign(e, resultData.error);
+      throw e;
+    }
     return resultData.result;
   }
 

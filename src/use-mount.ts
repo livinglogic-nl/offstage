@@ -105,11 +105,18 @@ var ${symbol} = {
             const config = map[path][requestData.method];
             if(config?.file === undefined) { return route.continue(); }
 
-            const result = await getCallResult(config, requestData.params, page._offstageOverride);
+            let result = await getCallResult(config, requestData.params, page._offstageOverride);
+            let error = undefined;
+            if(result.error) {
+              error = result.error;
+              result = undefined;
+            }
+
             route.fulfill({
               body: JSON.stringify({
                 jsonrpc: '2.0',
                 result,
+                error,
                 id: requestData.id,
               })
             });
