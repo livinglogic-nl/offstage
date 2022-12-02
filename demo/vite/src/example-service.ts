@@ -1,7 +1,12 @@
 import { service, endpoint } from 'offstage';
+import { makeUser, User } from './types.js';
+
 
 interface SquareRequest { nr:number }
 interface SquareResponse { result:number }
+
+interface UserRequest { id:number }
+type UserResponse = User;
 
 export const { exampleService } = service({
   getSquare: endpoint<SquareRequest,SquareResponse>(
@@ -23,5 +28,10 @@ export const { exampleService } = service({
   deleteSquare: endpoint<SquareRequest,SquareResponse>(
     'DELETE /foo',
     ({ nr }) => ({ result:nr*nr })
+  ),
+
+  getUser: endpoint<UserRequest,UserResponse>(
+    'GET /user/:id',
+    () => makeUser(),
   ),
 });

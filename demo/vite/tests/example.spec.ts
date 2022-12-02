@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { exampleService } from '../src/example-service.js';
 
 import { mount } from 'offstage';
+import { makeUser, makeUntyped } from '../src/types.js';
 
 test.beforeEach(async({page}) => {
   await mount(page);
@@ -59,4 +60,33 @@ test('can properly merge configurations', async ({ page }) => {
   const headers = request.headers();
   expect(headers.authorization).toBe('Bearer foo');
   expect(headers['x-foo-bar']).toBe('Bar');
+});
+
+test('factory works', () => {
+  const user = makeUser();
+  expect(user).toEqual({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '1990-01-01'
+  });
+
+  const youngOne = makeUser({
+    birthdate: '2022-01-01',
+  });
+  expect(youngOne).toEqual({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '2022-01-01',
+  });
+});
+
+test('untyped factory works', () => {
+  expect(makeUntyped()).toEqual({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '1990-01-01'
+  });
 });
