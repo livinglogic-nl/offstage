@@ -47,12 +47,16 @@ var ${symbol} = {
     }
   }
 
-  const getCallResult = async(config:any, requestData:any, overrides:any) => {
+  const getCallResult = async(config:any, requestData:any, mods:any) => {
     const loaded = await loadModule(config.file);
     const serviceMethod = loaded[config.serviceName][config.methodName];
+    const promise = mods.trigger[serviceMethod.serviceMethodName];
+    if(promise) {
+      await promise;
+    }
     let result = await serviceMethod(requestData);
 
-    const override = overrides[serviceMethod.serviceMethodName];
+    const override = mods.override[serviceMethod.serviceMethodName];
     if(override) {
       result = await override(requestData, result);
     }
@@ -60,7 +64,10 @@ var ${symbol} = {
   }
 
   const mount = async(page:any) => {
-    page._offstageOverride = {};
+    page._offstage = {
+      override: {},
+      trigger: {},
+    };
     state.currentContext = page;
 
     const findMountableRoutes = (await import('./find-mountable-routes.js')).default;
@@ -87,7 +94,7 @@ var ${symbol} = {
               ? await getParamsObject(request)
               : request.postDataJSON();
 
-            const result = await getCallResult(config, requestData, page._offstageOverride);
+            const result = await getCallResult(config, requestData, page._offstage);
             route.fulfill({ body: JSON.stringify(result) });
           });
         }
@@ -105,7 +112,7 @@ var ${symbol} = {
             const config = map[path][requestData.method];
             if(config?.file === undefined) { return route.continue(); }
 
-            let result = await getCallResult(config, requestData.params, page._offstageOverride);
+            let result = await getCallResult(config, requestData.params, page._offstage);
             let error = undefined;
             if(result.error) {
               error = result.error;

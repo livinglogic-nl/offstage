@@ -1,5 +1,5 @@
 import { getConfig } from "./get-config.js";
-import { OffstageConfig, OffstageConfiguratorContext, OffstageEndpoint, OffstageState } from "./types";
+import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageState } from "./types";
 
 const allowMock = () => {
   try {
@@ -100,8 +100,17 @@ export default (state:OffstageState) => {
       }
       return handleRestRequest(endpoint, requestData, config);
     }
-    func.override = (handler:any) => {
-      state.currentContext!._offstageOverride[(func as any).serviceMethodName] = handler;
+    func.override = (handler:OffstageOverrideHandler) => {
+      state.currentContext!._offstage.override[(func as any).serviceMethodName] = handler;
+    }
+    func.waitForTrigger = () => {
+      let triggerFunction = null;
+      const promise = new Promise(ok => {
+        triggerFunction = ok;
+      });
+
+      state.currentContext!._offstage.trigger[(func as any).serviceMethodName] = promise;
+      return triggerFunction as unknown as () => void;
     }
     return func;
   }
