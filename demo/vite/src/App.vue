@@ -39,7 +39,11 @@ const configBaseURL = async() => {
   configure([
     () => ({ baseURL:'http://localhost:3000' }),
   ]);
-  result.value = (await exampleService.getSquare({ nr:2 })).result
+  try {
+    result.value = (await exampleService.getSquare({ nr:2 })).result
+  } catch(e:any) {
+    result.value = e.responseData.error;
+  }
 }
 
 const configHeaders = async() => {

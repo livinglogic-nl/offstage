@@ -1,5 +1,5 @@
 import { getConfig } from "./get-config.js";
-import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageState } from "./types";
+import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
 
 const allowMock = () => {
   try {
@@ -26,6 +26,12 @@ const isProduction = () => {
     }
   } catch(_) {}
   return false;
+}
+
+const validateStatus = (config:OffstageConfig, response:Response) => {
+  const defaultFunc = (status:number) => status >= 200 && status < 300;
+  const func = config.validateStatus ?? defaultFunc;
+  return func(response.status);
 }
 
 export default (state:OffstageState) => {
@@ -55,8 +61,13 @@ export default (state:OffstageState) => {
     const getParams = params ? '?' + new URLSearchParams(params).toString() : '';
     const finalUrl = `${config.baseURL ?? ''}${url}${getParams}`;
 
-    const result = await fetch(finalUrl, config);
-    const resultData = await result.json();
+    const response = await fetch(finalUrl, config);
+    const resultData = await response.json();
+    if(!validateStatus(config, response)) {
+      const e = new Error('Response status was considered an error') as OffstageResponseError;
+      e.responseData = resultData;
+      throw e;
+    }
     return resultData;
   }
 

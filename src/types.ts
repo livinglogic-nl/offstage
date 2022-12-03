@@ -31,6 +31,7 @@ interface RequestInit {
 
 export interface OffstageConfig extends RequestInit {
   baseURL?:string;
+  validateStatus?:(status:number) => boolean;
 }
 
 export type OffstageConfiguratorAsync = (context:OffstageConfiguratorContext) => Promise<OffstageConfig|undefined>;
@@ -56,3 +57,6 @@ export interface OffstageEndpoint {
 export type OffstageService = Record<string,OffstageEndpoint>;
 
 
+export interface OffstageResponseError extends Error {
+  responseData: any;
+}
