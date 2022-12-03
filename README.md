@@ -97,3 +97,5 @@ configure([
 ```
 
 Offstage uses `fetch()` behind the scenes so you can refer to https://developer.mozilla.org/en-US/docs/Web/API/fetch for most of the options. 
+
+## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
