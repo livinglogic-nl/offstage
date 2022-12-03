@@ -83,14 +83,14 @@ The configurators are called in turn with details of the current request. The re
 import { configure } from 'offstage';
 
 configure([
-  // every call gets the same baseURL
+  // every request gets the same baseURL by default:
   () => ({ baseURL: process.env.VITE_API_URL }),
 
-  // every call gets the same token
+  // every request gets the same token:
   () => ({ headers: { Authorization: `Bearer {token}` } }),
 
-  // exampleService.foo gets a different baseURL
-  ({ serviceMethodName }) => serviceMethodName === 'exampleService.foo'
+  // exampleService.hello gets a different baseURL:
+  ({ serviceMethodName }) => serviceMethodName === 'exampleService.hello'
     ? { baseURL: process.env.VITE_EXAMPLE_API_URL }
     : {}
 ]);
@@ -98,4 +98,5 @@ configure([
 
 Offstage uses `fetch()` behind the scenes so you can refer to https://developer.mozilla.org/en-US/docs/Web/API/fetch for most of the options. 
 
-## [Read the Documentation](https://livinglogic-nl.github.io/offstage/)
+# Documentation
+[Read the Documentation](https://livinglogic-nl.github.io/offstage/)
