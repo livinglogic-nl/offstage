@@ -53,7 +53,9 @@ A configurator is a user-defined function that optionally takes a OffstageConfig
 
 The OffstageConfig extends the options object of the HTML5 `fetch()` method.
 
-Please refer to https://developer.mozilla.org/en-US/docs/Web/API/fetch for details.
+Please refer to
+[https://developer.mozilla.org/en-US/docs/Web/API/fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
+for details.
 
 Note: setting `method` and or `body` has no effect as Offstage already takes care of these.
 
