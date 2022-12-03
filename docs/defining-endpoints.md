@@ -21,7 +21,7 @@ export const { exampleService } = service({
 });
 
 ```
-## The **endpoint** method:
+## The **endpoint** function:
 - expects a request data interface (as a generic)
 - expects a response data interface (as a generic)
 - expects an endpoint signature (see below)
@@ -46,7 +46,7 @@ This function is called each time Offstage wants to resolve this endpoint withou
 
 - It receives the request data and should respond with mock response data
 
-## The **service** method:
+## The **service** function:
 - expects an object with one or more endpoints
 - uses destructuring (the `{ exampleService }` part) so Offstage can know the full name of endpoints like `exampleService.hello`.
 
