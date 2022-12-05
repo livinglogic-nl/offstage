@@ -39,7 +39,7 @@ test.fixme('Real GET request is done', async ({ page }) => {
 });
 
 
-test('Error is triggered when status code bigger than 300', async ({ page }) => {
+test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
   const promise = singleServerRequest(
     (req) => req.url.includes('/foo'),
     (_,res) => {
