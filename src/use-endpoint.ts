@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { getConfig } from "./get-config.js";
 import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
 
@@ -58,7 +59,7 @@ export default (state:OffstageState) => {
       config.body = JSON.stringify(restData);
     }
 
-    const getParams = params ? '?' + new URLSearchParams(params).toString() : '';
+    const getParams = params ? '?' + qs.stringify(params) : '';
     const finalUrl = `${config.baseURL ?? ''}${url}${getParams}`;
 
     const response = await fetch(finalUrl, config);
