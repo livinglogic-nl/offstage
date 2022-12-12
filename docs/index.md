@@ -67,7 +67,7 @@ test('testing with an override', async({page}) => {
 ```
 # Configuration
 
-You can use `config(configurators:[])` to configure things like `baseURL`, `headers`, `credentials` etc.
+You can use `configure(configurators:[])` to configure things like `baseURL`, `headers`, `credentials` etc.
 
 The configurators are called in turn with details of the current request. The results are then combined to form a final configuration.
 
