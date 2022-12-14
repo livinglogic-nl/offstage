@@ -127,10 +127,10 @@ export default (state:OffstageState) => {
   }
 
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
-    const func = async(requestData:ReqType):Promise<ResType> => {
+    const func = async(requestData:ReqType = {} as ReqType, oneShotConfig:OffstageConfig = {}):Promise<ResType> => {
       const config = await getConfig(state, {
         serviceMethodName: (func as any).serviceMethodName,
-      });
+      }, oneShotConfig);
 
       const cachedResponse = await loadCache(config, requestData);
       if(cachedResponse) {

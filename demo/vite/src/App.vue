@@ -9,6 +9,7 @@
     <button @click="configBaseURL">config baseURL</button>
     <button @click="configHeaders">config headers</button>
     <button @click="configCache">config cache</button>
+    <button @click="getWithOptions">GET with options</button>
   </div>
 </template>
 <script setup lang="ts">
@@ -67,6 +68,14 @@ const configCache = async() => {
     () => ({ cacheSeconds: 5 }),
   ]);
 }
+
+
+const getWithOptions = async() => {
+  result.value = (await exampleService.getSquare({ nr:2 }, {
+    baseURL: 'http://localhost:3000',
+  })).result
+}
+
 
 </script>
 <style scoped>

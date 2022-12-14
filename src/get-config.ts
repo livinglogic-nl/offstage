@@ -15,7 +15,7 @@ const mutateMerge = (target:any, add:any) => {
   }
 }
 
-export const getConfig = async(state:OffstageState, context:OffstageConfiguratorContext):Promise<OffstageConfig> => {
+export const getConfig = async(state:OffstageState, context:OffstageConfiguratorContext, oneShotConfig:OffstageConfig):Promise<OffstageConfig> => {
   const config = {};
   for await(let configurator of state.configurators) {
     const add = await configurator(context);
@@ -23,5 +23,6 @@ export const getConfig = async(state:OffstageState, context:OffstageConfigurator
       mutateMerge(config, add);
     }
   }
+  mutateMerge(config, oneShotConfig);
   return config;
 }

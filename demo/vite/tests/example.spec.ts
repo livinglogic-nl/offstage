@@ -80,6 +80,14 @@ test('can properly merge configurations', async ({ page }) => {
   expect(headers['x-foo-bar']).toBe('Bar');
 });
 
+test('can supply options at method invocation', async ({ page }) => {
+  await Promise.all([
+    page.click('"GET with options"'),
+    page.waitForRequest('http://localhost:3000/foo?nr=2'),
+  ]);
+});
+
+
 test('factory works', () => {
   const user = makeUser();
   expect(user).toEqual({
