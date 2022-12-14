@@ -52,6 +52,24 @@ test('can configure baseURL', async ({ page }) => {
   ]);
 });
 
+test('can cache responses', async ({ page }) => {
+  let count = 0;
+  page.on('request', (req) => {
+    if(req.url().includes('/foo')) {
+      count++;
+    }
+  });
+  await page.click('"config cache"'),
+
+  await Promise.all([
+    page.click('"GET 2"'),
+    page.waitForRequest('http://localhost:5173/foo?nr=2')
+  ]);
+  await page.click('"GET 2"');
+  await page.waitForTimeout(100);
+  expect(count).toBe(1);
+});
+
 test('can properly merge configurations', async ({ page }) => {
   const [request] = await Promise.all([
     page.waitForRequest(req => req.url().includes('/foo')),

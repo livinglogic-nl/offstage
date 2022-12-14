@@ -47,6 +47,9 @@ A configurator is a user-defined function that optionally takes a OffstageConfig
   /** The final endpoint url is prefixed with the baseURL **/
   baseURL?:string; 
 
+  /** If cacheSeconds is defined, responses are cached and reused if within cacheSeconds
+  cacheSeconds?:number;
+
   /** validateStatus allows to specify wether response status is considered an error
   validateStatus?:(status:number) => boolean; 
 

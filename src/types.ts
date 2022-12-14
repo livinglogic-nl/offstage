@@ -31,6 +31,7 @@ interface RequestInit {
 
 export interface OffstageConfig extends RequestInit {
   baseURL?:string;
+  cacheSeconds?:number;
   validateStatus?:(status:number) => boolean;
 }
 

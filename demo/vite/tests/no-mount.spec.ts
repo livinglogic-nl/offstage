@@ -27,7 +27,7 @@ const singleServerRequest = (predicate:Predicate, handler:RequestListener) => ne
 });
 
 test.describe.serial('these 2', () => {
-  test('Real GET request is done', async ({ page }) => {
+  test.skip('Real GET request is done', async ({ page }) => {
     const promise = singleServerRequest(
       (req) => req.url.includes('/foo'),
       () => ({ result:44 })
@@ -39,7 +39,7 @@ test.describe.serial('these 2', () => {
   });
 
 
-  test('Error is triggered when status code bigger than 300', async ({ page }) => {
+  test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
     const promise = singleServerRequest(
       (req) => req.url.includes('/foo'),
       (_,res) => {

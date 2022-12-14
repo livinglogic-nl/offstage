@@ -95,22 +95,60 @@ export default (state:OffstageState) => {
     return resultData.result;
   }
 
+  const calculateKey = async(requestData:any) => {
+    const encoded = (new TextEncoder()).encode(JSON.stringify(requestData));
+    return 'offstage-' + crypto.subtle.digest('sha-1', encoded);
+  }
+
+  const loadCache = async(config:OffstageConfig, requestData:any) => {
+    if(config.cacheSeconds === undefined) { return null; }
+
+    const key = await calculateKey(requestData);
+    const entry = sessionStorage.getItem(key);
+    if(!entry) { return null; }
+
+    const colon = entry.indexOf(':');
+    const time = parseInt(entry.substring(0, colon));
+    const elapsedSeconds = (Date.now() - time) / 1000;
+    if(elapsedSeconds > config.cacheSeconds) {
+      return null;
+    }
+    const response = JSON.parse(entry.substring(colon+1));
+    return response;
+  }
+
+  const saveCache = async(config:OffstageConfig, requestData:any, responseData:any) => {
+    if(config.cacheSeconds === undefined) { return; }
+    const key = await calculateKey(requestData);
+    const time = Date.now()
+    const json = JSON.stringify(responseData);
+    const entry = `${time}:${json}`;
+    sessionStorage.setItem(key, entry);
+  }
+
   const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
     const func = async(requestData:ReqType):Promise<ResType> => {
+      const config = await getConfig(state, {
+        serviceMethodName: (func as any).serviceMethodName,
+      });
+
+      const cachedResponse = await loadCache(config, requestData);
+      if(cachedResponse) {
+        return cachedResponse;
+      }
       if(allowMock() && !isProduction()) {
         const responseData = mock(requestData);
         if(!isImportFromTest()) {
           console.debug(`[offstage]`, endpoint, requestData, responseData);
         }
+        saveCache(config, requestData, responseData);
         return responseData;
       }
-      const config = await getConfig(state, {
-        serviceMethodName: (func as any).serviceMethodName,
-      });
-      if(endpoint.startsWith('JSONRPC')) {
-        return handleJsonRpcRequest(endpoint, requestData, config);
-      }
-      return handleRestRequest(endpoint, requestData, config);
+
+      const handleFunc = endpoint.startsWith('JSONRPC') ? handleJsonRpcRequest : handleRestRequest;
+      const responseData = await handleFunc(endpoint, requestData, config);
+      saveCache(config, requestData, responseData);
+      return responseData;
     }
     func.override = (handler:OffstageOverrideHandler) => {
       state.currentContext!._offstage.override[(func as any).serviceMethodName] = handler;

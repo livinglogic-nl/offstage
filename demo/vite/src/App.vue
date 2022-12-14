@@ -8,6 +8,7 @@
     <button @click="deleet(6)">DELETE 6</button>
     <button @click="configBaseURL">config baseURL</button>
     <button @click="configHeaders">config headers</button>
+    <button @click="configCache">config cache</button>
   </div>
 </template>
 <script setup lang="ts">
@@ -60,6 +61,11 @@ const configHeaders = async() => {
     }),
   ]);
   result.value = (await exampleService.getSquare({ nr:2 })).result
+}
+const configCache = async() => {
+  configure([
+    () => ({ cacheSeconds: 5 }),
+  ]);
 }
 
 </script>
