@@ -9,7 +9,7 @@ const mutateMerge = (target:any, add:any) => {
         target[i] = {};
       }
       mutateMerge(target[i], add[i]);
-    } else if(t === 'string') {
+    } else {
       target[i] = add[i];
     }
   }
