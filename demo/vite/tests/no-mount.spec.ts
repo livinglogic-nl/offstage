@@ -19,7 +19,6 @@ const singleServerRequest = (predicate:Predicate, handler:RequestListener) => ne
       const result = handler(req,res);
       res.end(JSON.stringify(result), () => {
         server.close(async() => {
-          await new Promise(ok => setTimeout(ok,1000));
           ok(req);
         });
       });
@@ -27,28 +26,30 @@ const singleServerRequest = (predicate:Predicate, handler:RequestListener) => ne
   });
 });
 
-test.fixme('Real GET request is done', async ({ page }) => {
-  const promise = singleServerRequest(
-    (req) => req.url.includes('/foo'),
-    () => ({ result:44 })
-  );
-  await page.goto('/');
-  await page.click('"config baseURL"');
-  await promise;
-  await expect(page.locator('"44"')).toBeVisible();
-});
+test.describe.serial('these 2', () => {
+  test('Real GET request is done', async ({ page }) => {
+    const promise = singleServerRequest(
+      (req) => req.url.includes('/foo'),
+      () => ({ result:44 })
+    );
+    await page.goto('/');
+    await page.click('"config baseURL"');
+    await promise;
+    await expect(page.locator('"44"')).toBeVisible();
+  });
 
 
-test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
-  const promise = singleServerRequest(
-    (req) => req.url.includes('/foo'),
-    (_,res) => {
-      res.statusCode = 422;
-      return { error:'Could not square input' };
-    }
-  );
-  await page.goto('/');
-  await page.click('"config baseURL"');
-  await promise;
-  await expect(page.locator('"Could not square input"')).toBeVisible();
+  test('Error is triggered when status code bigger than 300', async ({ page }) => {
+    const promise = singleServerRequest(
+      (req) => req.url.includes('/foo'),
+      (_,res) => {
+        res.statusCode = 422;
+        return { error:'Could not square input' };
+      }
+    );
+    await page.goto('/');
+    await page.click('"config baseURL"');
+    await promise;
+    await expect(page.locator('"Could not square input"')).toBeVisible();
+  });
 });
