@@ -87,6 +87,10 @@ var ${symbol} = {
           map[path] = {};
           const pattern = '.+' + path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
           await page.route(new RegExp(pattern), async(route:any, request:any) => {
+            const beforeQuery = request.url().split('?').shift();
+            if(!beforeQuery.match(new RegExp(pattern + '$'))) {
+              return route.continue();
+            }
             const config = map[path][request.method()];
             if(!config) { return route.continue(); }
 
