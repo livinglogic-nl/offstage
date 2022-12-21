@@ -2,9 +2,11 @@ import qs from 'qs';
 import { getConfig } from "./get-config.js";
 import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
 
+const isOffstagePlaywright = () => (window as any).isOffstagePlaywright
+
 const allowMock = () => {
   try {
-    if((window as any).isOffstagePlaywright) {
+    if(isOffstagePlaywright()) {
       return false;
     }
   } catch(_) {}
@@ -57,6 +59,9 @@ export default (state:OffstageState) => {
     config.method = method;
     if(method !== 'GET') {
       config.body = JSON.stringify(restData);
+    }
+    if(isOffstagePlaywright()) {
+      config.headers = { ...config.headers, 'x-offstage-request': JSON.stringify(requestData) };
     }
 
     const getParams = params ? '?' + qs.stringify(params) : '';

@@ -6,7 +6,6 @@ nav_order: 2
 
 # Defining endpoints
 
-
 Use the `endpoint()` and `service()` functions to define a service with endpoints.
 ```ts
 import { service, endpoint } from 'offstage';
@@ -49,4 +48,27 @@ This function is called each time Offstage wants to resolve this endpoint withou
 ## The service function:
 - expects an object with one or more endpoints
 - uses destructuring (the `{ exampleService }` part) so Offstage can know the full name of endpoints like `exampleService.hello`.
+
+
+## The factory function:
+
+You can use the `factory()` function to quickly create objects with default values:
+```ts
+
+import { factory } from 'offstage';
+import { User } from './types.ts';
+
+const makeUser = factory<User>({
+  id: 1,
+  firstname: 'John',
+  lastname: 'Doe',
+});
+
+const john = makeUser();
+// { id: 1, firstname: 'John', lastname: 'Doe' }
+
+const dodo = makeUser({ firstname: 'Doe' });
+// { id: 1, firstname: 'Doe', lastname: 'Doe' }
+
+```
 

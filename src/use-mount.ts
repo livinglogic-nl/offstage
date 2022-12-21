@@ -1,9 +1,10 @@
 import qs from 'qs';
+import fs from 'fs';
 
 export default (state:any) => {
-  const getParamsObject = async(request:any) => {
-    const query = request.url().split('?').pop();
-    return qs.parse(query);
+  const getQueryParams = (url:string) => {
+    if(!url.includes('?')) { return {}; }
+    return qs.parse(url.split('?').pop() as string);
   }
 
   const injectOffstageProxy = (str:string):string => {
@@ -46,23 +47,69 @@ var ${symbol} = {
     }
   }
 
-  const getCallResult = async(config:any, requestData:any, mods:any) => {
+  const getCallResponses = async(config:any, requestData:any, mods:any) => {
     const loaded = await loadModule(config.file);
     const serviceMethod = loaded[config.serviceName][config.methodName];
     const promise = mods.trigger[serviceMethod.serviceMethodName];
     if(promise) {
       await promise;
     }
-    let result = await serviceMethod(requestData);
-
+    const defaultResponse = await serviceMethod(requestData);
     const override = mods.override[serviceMethod.serviceMethodName];
-    if(override) {
-      result = await override(requestData, result);
-    }
-    return result;
+    return {
+      defaultResponse,
+      ...(override
+        ? { overrideResponse: await override(requestData, defaultResponse) }
+        : {}
+      ),
+    };
   }
 
-  const mount = async(page:any) => {
+  const useHandlePact = (pactConfig:any, testInfo:any) => {
+    if(pactConfig === undefined) { return () => {} }
+    if(testInfo === undefined) {
+      console.log('WARNING: Offstage Pact is configured but no testInfo is provided with the mount() call.');
+      return () => {}
+    }
+    return (config:any, path:string, queryParams:any, bodyParams:any, responses:any) => {
+      const { outputDir } = testInfo;
+      if(!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive:true });
+      }
+      const title = testInfo.title;
+      const jsonlFile = `${outputDir}/offstage-pact.jsonl`;
+      fs.promises.appendFile(jsonlFile, JSON.stringify({
+        title,
+        path,
+        queryParams,
+        bodyParams,
+        responses,
+        ...config,
+      })+'\n');
+    }
+  }
+  
+  const packJSONRPC = (id:any, result:any) => {
+    let error = undefined;
+    if(result.error) {
+      error = result.error;
+      result = undefined;
+    }
+    return {
+      jsonrpc: '2.0',
+      result,
+      error,
+      id,
+    }
+  }
+  const finalResponse = (responses:any) => responses.overrideResponse ?? responses.defaultResponse;
+
+  const mount = async(pageObject:any, testInfo?:any) => {
+    const page = pageObject.page ?? pageObject;
+    const loadConfig = (await import('./pact/load-config.js')).default;
+    const offstageConfig = await loadConfig();
+    const handlePact = useHandlePact(offstageConfig.pact, testInfo);
+
     page._offstage = {
       override: {},
       trigger: {},
@@ -84,21 +131,25 @@ var ${symbol} = {
         const [path] = url.split('?');
         if(!map[path]) {
           map[path] = {};
-          const pattern = '.+' + path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
-          await page.route(new RegExp(pattern), async(route:any, request:any) => {
-            const beforeQuery = request.url().split('?').shift();
-            if(!beforeQuery.match(new RegExp(pattern + '$'))) {
+          const pathPattern = path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
+          const urlPattern = '.+' + pathPattern;
+          await page.route(new RegExp(urlPattern), async(route:any, request:any) => {
+            const url = request.url();
+            const beforeQuery = url.split('?').shift();
+            if(!beforeQuery.match(new RegExp(pathPattern + '$'))) {
               return route.continue();
             }
             const config = map[path][request.method()];
             if(!config) { return route.continue(); }
 
-            const requestData = request.method() === 'GET'
-              ? await getParamsObject(request)
-              : request.postDataJSON();
+            const urlMatch = new RegExp(pathPattern).exec(url);
+            const queryParams = getQueryParams(url);
+            const bodyParams = request.postDataJSON();
 
-            const result = await getCallResult(config, requestData, page._offstage);
-            route.fulfill({ body: JSON.stringify(result) });
+            const requestData = JSON.parse(request.headers()['x-offstage-request']);
+            const responses = await getCallResponses(config, requestData, page._offstage);
+            handlePact(config, urlMatch![0], queryParams, bodyParams, responses);
+            route.fulfill({ body: JSON.stringify(finalResponse(responses)) });
           });
         }
         map[path][method] = config;
@@ -115,20 +166,15 @@ var ${symbol} = {
             const config = map[path][requestData.method];
             if(config?.file === undefined) { return route.continue(); }
 
-            let result = await getCallResult(config, requestData.params, page._offstage);
-            let error = undefined;
-            if(result.error) {
-              error = result.error;
-              result = undefined;
-            }
+            const responses = await getCallResponses(config, requestData.params, page._offstage);
+            const packedResponses = Object.entries(responses).reduce(
+              (a,[key,val]) => (
+                { ...a, [key]: packJSONRPC(requestData.id, val)})
+            ,{} as any);
 
+            handlePact(config, path, {}, requestData, packedResponses);
             route.fulfill({
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                result,
-                error,
-                id: requestData.id,
-              })
+              body: JSON.stringify(finalResponse(packedResponses))
             });
           });
         }

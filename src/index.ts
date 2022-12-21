@@ -6,6 +6,10 @@ import useService from './use-service.js';
 
 const state:OffstageState = {
   configurators: [],
+  rootConfig: {
+    pact: {
+    },
+  },
 };
 
 export const configure = useConfigure(state);

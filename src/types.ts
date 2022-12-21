@@ -42,6 +42,7 @@ export type OffstageConfigurator = OffstageConfiguratorSync|OffstageConfigurator
 
 export interface OffstageState {
   configurators:OffstageConfigurator[];
+  rootConfig?:any;
   currentContext?:any;
 }
 

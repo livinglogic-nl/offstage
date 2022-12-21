@@ -5,8 +5,8 @@ Offstage is a Front-End solution to handle your Back-End integration:
 - 🚀 Easily define a TypeScript Request API
 - ⚡️ Mock data for development (stripped out of production build)
 - 🎭 Same mock data for Playwright (to test the production build)
-- 🦄 Mock data overrides (for testing specific scenarios)
-- 🤝 Coming soon: generates PACT tests to ensure Back-End compatability
+- 🦄 Override mock data (for testing specific scenarios)
+- 🤝 Generates Pact tests to verify compatability
 - 🔥 Small footprint (offstage adds ~2kb to your production build)
 
 
