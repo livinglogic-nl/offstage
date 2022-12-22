@@ -1,10 +1,9 @@
-import fs from 'fs';
+import qs from 'qs';
 
 export default (state:any) => {
   const getParamsObject = async(request:any) => {
-    const { URLSearchParams } = await import('url');
     const query = request.url().split('?').pop();
-    return Object.fromEntries( new URLSearchParams(query).entries() );
+    return qs.parse(query);
   }
 
   const injectOffstageProxy = (str:string):string => {
