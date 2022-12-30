@@ -1,4 +1,4 @@
-# ![](docs/logo-light.svg)
+# ![](docs/logo-both.svg)
 ## Fake requests in dev - Real requests in prod
 
 - 🚀 Easily define a **TypeScript Request API**

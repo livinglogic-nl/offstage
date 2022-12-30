@@ -5,8 +5,8 @@ g { fill: black; }
 .shade { fill: white; }
 
 @media (prefers-color-scheme: dark) {
-  readme-toc g { fill: white; }
-  readme-toc .shade { fill: black; }
+  g { fill: white; }
+  .shade { fill: black; }
 }
 
 </style>
