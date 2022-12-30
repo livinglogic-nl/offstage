@@ -1,12 +1,12 @@
 <svg version="1.1" viewBox="0 0 200 64" width="600" xmlns="http://www.w3.org/2000/svg">
 <style>
 
-g { fill: white; }
-.shade { fill: black; }
+g { fill: black; }
+.shade { fill: white; }
 
-@media (prefers-color-scheme: light) {
-  g { fill: black; }
-  .shade { fill: white; }
+@media (prefers-color-scheme: dark) {
+  readme-toc g { fill: white; }
+  readme-toc .shade { fill: black; }
 }
 
 </style>
