@@ -1,5 +1,5 @@
-# ![](../docs/logo-both.svg)
-## Fake requests in dev - Real requests in prod
+# ![Offstage](../docs/logo-both.svg)
+## HTTP Client for faster development and testing
 
 - 🚀 Easily define a **TypeScript Request API**
 - ⚡️ **Mock data** for development (stripped out of production build)
@@ -18,22 +18,21 @@ npm i offstage
 
 ## 2. Define service
 ```ts
-// src/example-service.ts
 import { service, endpoint } from 'offstage'
 
 export const { exampleService } = service({
-  foo: endpoint<{id:number},{message:string}>('GET /foo',
-    ({ id }) => ({ message: `some mock data for id: ${id}` }),
+  foo: endpoint<
+    {id:number}, // typed request
+    {message:string} // typed response
+  >('GET /foo', // endpoint method and path
+  ({ id }) => ({ message: `hello ${id}` }), // mock response for dev & testing
 });
+
 ```
 
 ## 3. Use service
 ```ts
-// src/app.ts
-import exampleService from './example-service';
-
-const data = await exampleService.foo({ id:2 });
-console.log(data); // { message:'some mock data for id: 2' }
+await exampleService.foo({ id:2 }); // { message:'hello 2' }
 ```
 
 # Usage with playwright
@@ -67,7 +66,7 @@ test('testing with an override', async({page}) => {
     return { ...responseData, message: 'override works!' };
   });
   // requests of 'GET /foo' are now intercepted
-  // and responded with { message:'override works! }
+  // and respond with { message:'override works! }
 });
 ```
 # Configuration
