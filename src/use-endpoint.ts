@@ -43,7 +43,7 @@ export default (state:OffstageState) => {
     const [method,pathPlusQuery] = endpoint.split(' ');
     const [path,query] = pathPlusQuery.split('?');
 
-    let url = path.replace(/:([^\/]+)/, (_:string,match:string) => {
+    let url = path.replace(/:([^\/]+)/g, (_:string,match:string) => {
       const value = restData[match];
       delete restData[match]
       return value;
