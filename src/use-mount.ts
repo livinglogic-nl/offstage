@@ -117,6 +117,9 @@ var ${symbol} = {
     state.currentContext = page;
 
     const findMountableRoutes = (await import('./find-mountable-routes.js')).default;
+    await page.evaluate(() => {
+      (window as any).isOffstagePlaywright = true;
+    });
     await page.addInitScript(() => {
       (window as any).isOffstagePlaywright = true;
     });
