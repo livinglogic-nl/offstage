@@ -113,7 +113,7 @@ export default (state:OffstageState) => {
   }
 
   const calculateKey = async(requestData:any) => {
-    return 'offstage-' + digestMessage(JSON.stringify(requestData));
+    return 'offstage-' + await digestMessage(JSON.stringify(requestData));
   }
 
   const loadCache = async(config:OffstageConfig, requestData:any) => {

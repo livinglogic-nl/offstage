@@ -50,7 +50,7 @@ export interface OffstageState {
 export type OffstageOverrideHandler = (requestData:any, responseData:any) => any;
 
 export interface OffstageEndpoint {
-  (requestData:any):Promise<any>;
+  (requestData:any, oneShotConfig?:OffstageConfig):Promise<any>;
   override:(handler:OffstageOverrideHandler) => void;
   waitForTrigger:() => () => void;
   serviceMethodName?:string;
