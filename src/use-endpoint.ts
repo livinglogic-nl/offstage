@@ -106,7 +106,7 @@ export default (state:OffstageState) => {
 
   const calculateKey = async(requestData:any) => {
     const encoded = (new TextEncoder()).encode(JSON.stringify(requestData));
-    return 'offstage-' + crypto.subtle.digest('sha-1', encoded);
+    return 'offstage-' + await crypto.subtle.digest('sha-1', encoded);
   }
 
   const loadCache = async(config:OffstageConfig, requestData:any) => {
