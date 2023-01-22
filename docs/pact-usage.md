@@ -59,6 +59,6 @@ To automatically publish to a Pact broker, supply the following environment to `
 - `OFFSTAGE_PACT_BROKER_URL`: url of Pact broker
 - `OFFSTAGE_PACT_BROKER_USERNAME`: username for publishing
 - `OFFSTAGE_PACT_BROKER_PASSWORD`: password for publishing
-- `OFFSTAGE_PACT_COMMIT`: blabla
-- `OFFSTAGE_PACT_BRANCH`: blabla
+- `OFFSTAGE_PACT_COMMIT`: current git commit sha
+- `OFFSTAGE_PACT_BRANCH`: current git branch
 

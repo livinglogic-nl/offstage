@@ -1,5 +1,11 @@
-# ![Offstage](../docs/logo-light.svg)
+# ![](../docs/logo-light.svg)
 ## HTTP Client for faster development and testing
+
+
+<svg viewBox="-250 -250 500 500" width="500">
+<circle r=10 fill=white />
+</svg>
+
 
 - 🚀 Easily define a **TypeScript Request API**
 - ⚡️ **Mock data** for development (stripped out of production build)

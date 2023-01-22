@@ -1,8 +1,17 @@
-import qs from 'qs';
+import qs from './qust.js';
 import { getConfig } from "./get-config.js";
 import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
 
-const isOffstagePlaywright = () => (window as any).isOffstagePlaywright
+
+const getGlobal = () => {
+  try {
+    return window as any;
+  } catch(_) {
+    return global as any;
+  }
+}
+
+const isOffstagePlaywright = () => getGlobal().isOffstagePlaywright
 
 const allowMock = () => {
   try {

@@ -14,7 +14,7 @@ const entriesWithOffstage = async() => {
       file,
       content,
     }
-  }))).filter((obj:any) => obj.content.includes(`from 'offstage'`));
+  }))).filter((obj:any) => obj.content.includes(`from 'offstage/core'`));
 }
 
 
@@ -41,7 +41,7 @@ export default async() => {
 
       const endpointMatch = content.substring(m.index!).match(/['"`](.+?)['"`]/);
       if(!endpointMatch) {
-        throw Error('Could not find endpont signature in source code');
+        throw Error('Could not find endpoint signature in source code');
       }
       result.push({
         serviceName,

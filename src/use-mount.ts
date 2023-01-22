@@ -1,4 +1,4 @@
-import qs from 'qs';
+import qs from './qust.js';
 import fs from 'fs';
 
 export default (state:any) => {
@@ -43,6 +43,7 @@ var ${symbol} = {
       const [,returnSymbol] = match;
       sourceCode = sourceCode.replace(exportsRegex, '')
         + `return __toCommonJS(${returnSymbol})`;
+      console.log({sourceCode})
       return (new Function(sourceCode))();
     }
   }
@@ -126,6 +127,9 @@ var ${symbol} = {
     process.env.OFFSTAGE_IMPORT_FROM_TEST = '1';
 
     const mountable = await findMountableRoutes();
+    if(mountable.length === 0) {
+      console.log('[offstage] no services found in src/ directory.');
+    }
 
     const map:any = {};
     await Promise.all(mountable.map(async(config) => {
