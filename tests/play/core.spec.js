@@ -31,7 +31,7 @@ const defaultApp = {
   `,
 };
 
-test('mounts endpoints using existing mock functions', async() => {
+test('PLAY: mounts endpoints using existing mock functions', async() => {
   const { build, serveAndPlay } = await prepareProject({
     ...defaultApp,
     'tests/app.spec.ts': `
@@ -78,7 +78,7 @@ test('mounts endpoints using existing mock functions', async() => {
   await serveAndPlay();
 });
 
-test('can override an endpoint for a single test', async() => {
+test('PLAY: can override an endpoint for a single test', async() => {
   const { build, serveAndPlay } = await prepareProject({
     ...defaultApp,
     'tests/app.spec.ts': `
@@ -107,6 +107,55 @@ test('can override an endpoint for a single test', async() => {
   await serveAndPlay();
 });
 
+test('PLAY: mounts endpoints using existing mock functions commonjs', async() => {
+  const { build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'package.json': JSON.stringify({}),
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { mount } from 'offstage/playwright';
+      test('GET works', async({ page }) => {
+        await mount(page);
+        await page.goto('http://localhost:5173/#/sum');
+        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        await expect(page.locator('"3"')).toBeVisible();
+        expect(request.method()).toBe('GET');
+      });
+      `,
+  });
+  await build({ prod:true });
+  await serveAndPlay();
+});
+
+test('PLAY: can override an endpoint for a single test commonjs', async() => {
+  const { build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'package.json': JSON.stringify({}),
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { mount } from 'offstage/playwright';
+      import { mathService } from '../src/math-service.js';
+      test('GET override works', async({ page }) => {
+        await mount(page);
+        mathService.sum.override(() => 4);
+        await page.goto('http://localhost:5173/#/sum');
+        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        await expect(page.locator('"4"')).toBeVisible();
+        expect(request.method()).toBe('GET');
+      });
+
+      test('GET works', async({ page }) => {
+        await mount(page);
+        await page.goto('http://localhost:5173/#/sum');
+        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        await expect(page.locator('"3"')).toBeVisible();
+        expect(request.method()).toBe('GET');
+      });
+      `,
+  });
+  await build({ prod:true });
+  await serveAndPlay();
+});
 /*
 test('can configure baseURL', async ({ page }) => {
   await Promise.all([
