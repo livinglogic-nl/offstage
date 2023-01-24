@@ -8,51 +8,6 @@ export default (state:any) => {
     return qs.parse(url.split('?').pop() as string);
   }
 
-//   const injectOffstageProxy = (str:string):string => {
-//     return str.replace(/var (.*) = require\("offstage"\);/g, (_,symbol) => `
-// var ${symbol} = {
-//   service: (eps) => new Proxy(eps, { get: (obj, key) => obj[key] ?? obj }),
-//   endpoint: (_,mockFunction) => mockFunction,
-//   factory: (defaultObject) => (override = {}) => ({...defaultObject, ...override}),
-// }`.trim());
-//   }
-//
-//   const loadModule = async(file:string) => {
-//     try {
-//       const loaded = await import(file);
-//       return loaded;
-//     } catch(e) {
-//       const format = global['require'] === undefined ? 'esm' : 'cjs';
-//       const esbuild = await import('esbuild');
-//       const result = esbuild.buildSync({
-//         bundle: true,
-//         entryPoints: [ file ],
-//         external: [ 'offstage' ],
-//         platform: 'neutral',
-//         format,
-//         write: false,
-//         outdir: 'out',
-//       });
-//       const outFile = result.outputFiles[0];
-//       if(format === 'esm') {
-//         return (new Function(outFile.text))();
-//       }
-//
-//       const exportsRegex = /module.exports = __toCommonJS\((.+?)\);/
-//       let sourceCode = injectOffstageProxy(outFile.text);
-//       console.log({sourceCode})
-//       const match = sourceCode.match(exportsRegex);
-//       if(!match) {
-//         throw Error('Could not find module exports line.');
-//       }
-//
-//       const [,returnSymbol] = match;
-//       sourceCode = sourceCode.replace(exportsRegex, '')
-//         + `return __toCommonJS(${returnSymbol})`;
-//       return (new Function(sourceCode))();
-//     }
-//   }
-
   const getCallResponses = async(config:any, requestData:any, mods:any) => {
     const loaded = await loadModule(config.file);
     const serviceMethod = loaded[config.serviceName][config.methodName];
