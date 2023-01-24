@@ -156,76 +156,45 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
   await build({ prod:true });
   await serveAndPlay();
 });
-/*
-test('can configure baseURL', async ({ page }) => {
-  await Promise.all([
-    page.click('"config baseURL"'),
-    page.waitForRequest('http://localhost:3000/foo?nr=2'),
-  ]);
-});
 
-test('can cache responses', async ({ page }) => {
-  let count = 0;
-  page.on('request', (req) => {
-    if(req.url().includes('/foo')) {
-      count++;
-    }
+test('PLAY: can cache responses', async() => {
+  const { build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'src/app.ts': `
+      import { configure } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' }),
+        () => ({ cacheSeconds:0.15 }),
+      ]);
+      
+      [0,50,150].forEach(delayms => {
+        setTimeout(() => {
+         mathService.sum({ a:1, b:2 });
+        }, delayms);
+      });
+      
+    `,
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { mount } from 'offstage/playwright';
+      import { mathService } from '../src/math-service.js';
+
+      test('Because of caching, only 2 of the 3 requests make it to playwright', async({ page }) => {
+        await mount(page);
+        let total = 0;
+        page.on('request', req => {
+          if(req.url().includes('sum')) {
+            total++;
+          }
+        });
+        await page.goto('http://localhost:5173');
+        await page.waitForTimeout(500);
+        expect(total).toBe(2);
+      });
+      `,
   });
-  await page.click('"config cache"'),
-
-  await Promise.all([
-    page.click('"GET 2"'),
-    page.waitForRequest('http://localhost:5173/foo?nr=2')
-  ]);
-  await page.click('"GET 2"');
-  await page.waitForTimeout(100);
-  expect(count).toBe(1);
+  await build({ prod:true });
+  await serveAndPlay();
 });
 
-test('can properly merge configurations', async ({ page }) => {
-  const [request] = await Promise.all([
-    page.waitForRequest(req => req.url().includes('/foo')),
-    page.click('"config headers"'),
-  ]);
-  const headers = request.headers();
-  expect(headers.authorization).toBe('Bearer foo');
-  expect(headers['x-foo-bar']).toBe('Bar');
-});
-
-test('can supply options at method invocation', async ({ page }) => {
-  await Promise.all([
-    page.click('"GET with options"'),
-    page.waitForRequest('http://localhost:3000/foo?nr=2'),
-  ]);
-});
-
-
-test('factory works', () => {
-  const user = makeUser();
-  expect(user).toEqual({
-    email: 'user@company.org',
-    firstname: 'John',
-    lastname: 'Doe',
-    birthdate: '1990-01-01'
-  });
-
-  const youngOne = makeUser({
-    birthdate: '2022-01-01',
-  });
-  expect(youngOne).toEqual({
-    email: 'user@company.org',
-    firstname: 'John',
-    lastname: 'Doe',
-    birthdate: '2022-01-01',
-  });
-});
-
-test('untyped factory works', () => {
-  expect(makeUntyped()).toEqual({
-    email: 'user@company.org',
-    firstname: 'John',
-    lastname: 'Doe',
-    birthdate: '1990-01-01'
-  });
-});
-*/

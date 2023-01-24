@@ -172,6 +172,93 @@ test('calling a DELETE endpoint makes a request', async() => {
   expect(lastRequest.bodyJSON).toEqual({ a:1, b:2 });
 });
 
+test('can properly merge configurations', async() => {
+  const { buildAndRun } = await prepareProject({
+    'src/app.ts': `
+      import { configure } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' }),
+        () => ({ headers: { Authorization: 'Bearer foo' } }),
+        () => ({ headers: { 'x-foo-bar': 'Bar' } }),
+      ]);
+      console.log(await mathService.sum({ a:1, b:2 }));
+    `,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('DELETE /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  const state = await createServer((_, res) => res.end('4'));
+  await buildAndRun({ prod: true });
+
+  const { lastRequest } = state;
+  const headers = lastRequest.headers;
+  expect(headers.authorization).toBe('Bearer foo');
+  expect(headers['x-foo-bar']).toBe('Bar');
+});
+
+test('can supply options at method invocation', async() => {
+  const { buildAndRun } = await prepareProject({
+    'src/app.ts': `
+      import { configure } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' }),
+      ]);
+      console.log(await mathService.sum({ a:1, b:2 }, {
+        headers: {
+          'x-foo-bar': 'Foo',
+        }
+      }));
+    `,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('DELETE /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  const state = await createServer((_, res) => res.end('4'));
+  await buildAndRun({ prod: true });
+
+  const { lastRequest } = state;
+  const headers = lastRequest.headers;
+  expect(headers['x-foo-bar']).toBe('Foo');
+});
+
+test('factory works', async() => {
+  const { factory } = await import(process.cwd() + '/dist/mjs/core.js');
+  const makeUser = factory({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '1990-01-01'
+  });
+
+  expect(makeUser()).toEqual({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '1990-01-01'
+  });
+
+  expect(makeUser({ birthdate: '2022-01-01' })).toEqual({
+    email: 'user@company.org',
+    firstname: 'John',
+    lastname: 'Doe',
+    birthdate: '2022-01-01',
+  });
+});
+
 test('minified takes less than 5kb', async() => {
   const { dir } = await prepareProject({
     ...defaultApp,
@@ -196,9 +283,6 @@ test('minified takes less than 5kb', async() => {
     outfile: 'app.js',
   });
   expect(result.outputFiles[0].text.length).toBeLessThan(5 * 1024);
-
-
-
 });
 
   // test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
