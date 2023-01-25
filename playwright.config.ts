@@ -1,4 +1,4 @@
 export default {
-  timeout: 5000,
+  timeout: (process.env.CI ? 10 : 5 )* 1000,
 }
 

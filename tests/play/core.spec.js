@@ -39,36 +39,46 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
       import { mount } from 'offstage/playwright';
       test('GET works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"3"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
       test('POST works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/subtract');
-        const request = await page.waitForRequest(req => req.url().includes('subtract'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('subtract')),
+          page.goto('http://localhost:5173/#/subtract'),
+        ]);
         await expect(page.locator('"-1"')).toBeVisible();
         expect(request.method()).toBe('POST');
       });
       test('PATCH works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/multiply');
-        const request = await page.waitForRequest(req => req.url().includes('multiply'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('multiply')),
+          page.goto('http://localhost:5173/#/multiply'),
+        ]);
         await expect(page.locator('"2"')).toBeVisible();
         expect(request.method()).toBe('PATCH');
       });
       test('PUT works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/divide');
-        const request = await page.waitForRequest(req => req.url().includes('divide'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('divide')),
+          page.goto('http://localhost:5173/#/divide'),
+        ]);
         await expect(page.locator('"0.5"')).toBeVisible();
         expect(request.method()).toBe('PUT');
       });
       test('DELETE works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/modulus');
-        const request = await page.waitForRequest(req => req.url().includes('modulus'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('modulus')),
+          page.goto('http://localhost:5173/#/modulus'),
+        ]);
         await expect(page.locator('"1"')).toBeVisible();
         expect(request.method()).toBe('DELETE');
       });
@@ -88,16 +98,20 @@ test('PLAY: can override an endpoint for a single test', async() => {
       test('GET override works', async({ page }) => {
         await mount(page);
         mathService.sum.override(() => 4);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"4"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
 
       test('GET works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"3"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
@@ -116,8 +130,10 @@ test('PLAY: mounts endpoints using existing mock functions commonjs', async() =>
       import { mount } from 'offstage/playwright';
       test('GET works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"3"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
@@ -138,16 +154,20 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
       test('GET override works', async({ page }) => {
         await mount(page);
         mathService.sum.override(() => 4);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"4"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
 
       test('GET works', async({ page }) => {
         await mount(page);
-        await page.goto('http://localhost:5173/#/sum');
-        const request = await page.waitForRequest(req => req.url().includes('sum'));
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
         await expect(page.locator('"3"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
