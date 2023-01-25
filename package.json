@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && sh ./fixup",
-    "test": "find tests/**/*.spec.js -exec node {} \\;",
+    "test": "npx playwright test",
     "semantic-release": "semantic-release"
   },
   "keywords": [],
