@@ -84,7 +84,6 @@ export default (state:any) => {
     await page.addInitScript(() => {
       (window as any).isOffstagePlaywright = true;
     });
-    process.env.OFFSTAGE_IMPORT_FROM_TEST = '1';
 
     const mountable = await findMountableRoutes();
     if(mountable.length === 0) {

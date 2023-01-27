@@ -1,44 +1,7 @@
 import qs from './qust.js';
 import { getConfig } from "./get-config.js";
 import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
-
-
-const getGlobal = () => {
-  try {
-    return window as any;
-  } catch(_) {
-    return global as any;
-  }
-}
-
-const isOffstagePlaywright = () => getGlobal().isOffstagePlaywright
-
-const allowMock = () => {
-  try {
-    if(isOffstagePlaywright()) {
-      return false;
-    }
-  } catch(_) {}
-  return true;
-}
-
-const isImportFromTest = () => {
-  try {
-    if(process.env.OFFSTAGE_IMPORT_FROM_TEST !== undefined) {
-      return true;
-    }
-  } catch(_) {}
-  return false;
-}
-
-const isProduction = () => {
-  try {
-    if(process.env.NODE_ENV === 'production') {
-      return true;
-    }
-  } catch(_) {}
-  return false;
-}
+import { getGlobal, isMockAllowed, isPlaywright, isProduction } from './mode.js';
 
 const validateStatus = (config:OffstageConfig, response:Response) => {
   const defaultFunc = (status:number) => status >= 200 && status < 300;
@@ -69,7 +32,7 @@ export default (state:OffstageState) => {
     if(method !== 'GET') {
       config.body = JSON.stringify(restData);
     }
-    if(isOffstagePlaywright()) {
+    if(isPlaywright()) {
       config.headers = { ...config.headers, 'x-offstage-request': JSON.stringify(requestData) };
     }
 
@@ -158,10 +121,11 @@ export default (state:OffstageState) => {
       if(cachedResponse !== null) {
         return cachedResponse;
       }
-      if(allowMock() && !isProduction()) {
+      if(isMockAllowed() && !isProduction()) {
         const responseData = mock(requestData);
-        if(!isImportFromTest()) {
-          console.debug(`[offstage]`, endpoint, requestData, responseData);
+        const { addHistory } = getGlobal()?.offstage ?? {};
+        if(addHistory) {
+          addHistory({ date:new Date(), serviceMethodName, endpoint, requestData, responseData });
         }
         saveCache(config, serviceMethodName, requestData, responseData);
         return responseData;
