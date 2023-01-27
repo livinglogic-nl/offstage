@@ -135,8 +135,8 @@ var ${symbol} = {
         if(!map[path]) {
           map[path] = {};
           const pathPattern = path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
-          const urlPattern = '.+' + pathPattern;
-          await page.route(new RegExp(urlPattern), async(route:any, request:any) => {
+          const regex = new RegExp('^'+pathPattern+'$');
+          await page.route((url:any) => url.pathname.match(regex), async(route:any, request:any) => {
             const url = request.url();
             const beforeQuery = url.split('?').shift();
             if(!beforeQuery.match(new RegExp(pathPattern + '$'))) {
