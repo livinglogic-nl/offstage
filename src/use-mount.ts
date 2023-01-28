@@ -90,47 +90,38 @@ export default (state:any) => {
       console.log('[offstage] no services found in src/ directory.');
     }
 
-    const map:any = {};
+    const jsonRPCMap:any = {};
     await Promise.all(mountable.map(async(config) => {
       const [method, url] = config.endpoint.split(' ');
       if(method !== 'JSONRPC') {
         const [path] = url.split('?');
-        if(!map[path]) {
-          map[path] = {};
-          const pathPattern = path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
-          const urlPattern = '.+' + pathPattern;
-          await page.route(new RegExp(urlPattern), async(route:any, request:any) => {
-            const url = request.url();
-            const beforeQuery = url.split('?').shift();
-            if(!beforeQuery.match(new RegExp(pathPattern + '$'))) {
-              return route.continue();
-            }
-            const config = map[path][request.method()];
-            if(!config) { return route.continue(); }
+        const pathPattern = path.replace(/:([^\/]+)/g, '(?<$1>[^/]+)');
+        const regex = new RegExp('^'+pathPattern+'$');
+        await page.route((url:any) => url.pathname.match(regex), async(route:any, request:any) => {
+          if(request.method() !== method) { return route.fallback(); }
 
-            const urlMatch = new RegExp(pathPattern).exec(url);
-            const queryParams = getQueryParams(url);
-            const bodyParams = request.postDataJSON();
+          const url = request.url();
+          const urlMatch = new RegExp(pathPattern).exec(url);
+          const queryParams = getQueryParams(url);
+          const bodyParams = request.postDataJSON();
 
-            const requestData = JSON.parse(request.headers()['x-offstage-request']);
-            const responses = await getCallResponses(config, requestData, page._offstage);
-            handlePact(config, urlMatch![0], queryParams, bodyParams, responses);
-            route.fulfill({ body: JSON.stringify(finalResponse(responses)) });
-          });
-        }
-        map[path][method] = config;
+          const requestData = JSON.parse(request.headers()['x-offstage-request']);
+          const responses = await getCallResponses(config, requestData, page._offstage);
+          handlePact(config, urlMatch![0], queryParams, bodyParams, responses);
+          route.fulfill({ body: JSON.stringify(finalResponse(responses)) });
+        });
       } else {
         const [,path, rpcMethod] = url.match(/(.+?)([^\/]+)$/);
-        if(!map[path]) {
-          map[path] = {};
-          await page.route('**'+path, async(route:any, request:any) => {
-            if(request.method() !== 'POST') { return route.continue(); }
+        if(!jsonRPCMap[path]) {
+          jsonRPCMap[path] = {};
+          await page.route((url:any) => url.pathname === path, async(route:any, request:any) => {
+            if(request.method() !== 'POST') { return route.fallback(); }
 
             const requestData = request.postDataJSON();
-            if(requestData.jsonrpc !== '2.0') { return route.continue(); }
+            if(requestData.jsonrpc !== '2.0') { return route.fallback(); }
 
-            const config = map[path][requestData.method];
-            if(config?.file === undefined) { return route.continue(); }
+            const config = jsonRPCMap[path][requestData.method];
+            if(config?.file === undefined) { return route.fallback(); }
 
             const responses = await getCallResponses(config, requestData.params, page._offstage);
             const packedResponses = Object.entries(responses).reduce(
@@ -144,10 +135,9 @@ export default (state:any) => {
             });
           });
         }
-        map[path][rpcMethod] = config;
+        jsonRPCMap[path][rpcMethod] = config;
       }
     }));
   }
   return mount;
-
 }

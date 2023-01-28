@@ -88,6 +88,7 @@ export const prepareProject = async(fileContents) => {
         cwd: dir,
         stdio: 'inherit',
       }, (e,stdout, stderr) => {
+          console.log(stdout)
           if(e) {
             console.log(stdout)
             console.log(stderr)

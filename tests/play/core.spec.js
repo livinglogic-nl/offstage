@@ -10,7 +10,7 @@ const defaultApp = {
       () => ({ baseURL:'http://localhost:3000' })
     ]);
     const method = location.hash.substring(2);
-    const result = await mathService[method]({ a:1, b:2 });
+    const result = await mathService[method]({ a:5, b:2 });
     document.body.innerHTML = '<div class="result">'+result+'</div>';
   `,
 
@@ -19,6 +19,8 @@ const defaultApp = {
     export const { mathService } = service({
       sum: endpoint<{a:number, b:number}, number>
         ('GET /sum', ({ a, b }) => a + b),
+      postSum: endpoint<{a:number, b:number}, number>
+        ('POST /sum', ({ a, b }) => a + b),
       subtract: endpoint<{a:number, b:number}, number>
         ('POST /subtract', ({ a, b }) => a - b),
       multiply: endpoint<{a:number, b:number}, number>
@@ -27,6 +29,10 @@ const defaultApp = {
         ('PUT /divide', ({ a, b }) => a / b),
       modulus: endpoint<{a:number, b:number}, number>
         ('DELETE /modulus', ({ a, b }) => a % b),
+      power: endpoint<{a:number, b:number}, number>
+        ('JSONRPC /jsonrpc/calculatePower', ({ a, b }) => Math.pow(a,b)),
+      jsonSum: endpoint<{a:number, b:number}, number>
+        ('JSONRPC /jsonrpc/calculateSum', ({ a, b }) => a + b),
     })
   `,
 };
@@ -43,7 +49,7 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
         ]);
-        await expect(page.locator('"3"')).toBeVisible();
+        await expect(page.locator('"7"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
       test('POST works', async({ page }) => {
@@ -52,7 +58,7 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
           page.waitForRequest(req => req.url().includes('subtract')),
           page.goto('http://localhost:5173/#/subtract'),
         ]);
-        await expect(page.locator('"-1"')).toBeVisible();
+        await expect(page.locator('"3"')).toBeVisible();
         expect(request.method()).toBe('POST');
       });
       test('PATCH works', async({ page }) => {
@@ -61,7 +67,7 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
           page.waitForRequest(req => req.url().includes('multiply')),
           page.goto('http://localhost:5173/#/multiply'),
         ]);
-        await expect(page.locator('"2"')).toBeVisible();
+        await expect(page.locator('"10"')).toBeVisible();
         expect(request.method()).toBe('PATCH');
       });
       test('PUT works', async({ page }) => {
@@ -70,7 +76,7 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
           page.waitForRequest(req => req.url().includes('divide')),
           page.goto('http://localhost:5173/#/divide'),
         ]);
-        await expect(page.locator('"0.5"')).toBeVisible();
+        await expect(page.locator('"2.5"')).toBeVisible();
         expect(request.method()).toBe('PUT');
       });
       test('DELETE works', async({ page }) => {
@@ -81,6 +87,43 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         ]);
         await expect(page.locator('"1"')).toBeVisible();
         expect(request.method()).toBe('DELETE');
+      });
+      test('same path multiple methods works', async({ page }) => {
+        await mount(page);
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/postSum'),
+        ]);
+        await expect(page.locator('"7"')).toBeVisible();
+        expect(request.method()).toBe('POST');
+      });
+      test('JSONRPC works', async({ page }) => {
+        await mount(page);
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('jsonrpc')),
+          page.goto('http://localhost:5173/#/power'),
+        ]);
+        await expect(page.locator('"25"')).toBeVisible();
+        expect(request.method()).toBe('POST');
+        expect(request.postDataJSON()).toEqual({
+          jsonrpc: '2.0',
+          method: 'calculatePower',
+          params: { a: 5, b: 2 }
+        });
+      });
+      test('JSONRPC works multiple methods', async({ page }) => {
+        await mount(page);
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('jsonrpc')),
+          page.goto('http://localhost:5173/#/jsonSum'),
+        ]);
+        await expect(page.locator('"7"')).toBeVisible();
+        expect(request.method()).toBe('POST');
+        expect(request.postDataJSON()).toEqual({
+          jsonrpc: '2.0',
+          method: 'calculateSum',
+          params: { a: 5, b: 2 }
+        });
       });
       `,
   });
@@ -112,7 +155,7 @@ test('PLAY: can override an endpoint for a single test', async() => {
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
         ]);
-        await expect(page.locator('"3"')).toBeVisible();
+        await expect(page.locator('"7"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
       `,
@@ -134,7 +177,7 @@ test('PLAY: mounts endpoints using existing mock functions commonjs', async() =>
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
         ]);
-        await expect(page.locator('"3"')).toBeVisible();
+        await expect(page.locator('"7"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
       `,
@@ -168,7 +211,7 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
         ]);
-        await expect(page.locator('"3"')).toBeVisible();
+        await expect(page.locator('"7"')).toBeVisible();
         expect(request.method()).toBe('GET');
       });
       `,
