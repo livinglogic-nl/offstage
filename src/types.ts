@@ -50,7 +50,6 @@ export interface OffstageState {
 export type OffstageOverrideHandler = (requestData:any, responseData:any) => any;
 
 export interface OffstageEndpoint {
-  (requestData:any, oneShotConfig?:OffstageConfig):Promise<any>;
   override:(handler:OffstageOverrideHandler) => void;
   waitForTrigger:() => () => void;
   serviceMethodName?:string;
@@ -58,7 +57,9 @@ export interface OffstageEndpoint {
 
 export type OffstageService = Record<string,OffstageEndpoint>;
 
-
 export interface OffstageResponseError extends Error {
   responseData: any;
 }
+
+type EndpointMethod = 'GET'| 'POST'| 'PATCH'| 'PUT'| 'DELETE'| 'JSONRPC'
+export type EndpointSignature = `${EndpointMethod} /${string}`;

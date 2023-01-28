@@ -1,6 +1,6 @@
 import qs from './qust.js';
 import { getConfig } from "./get-config.js";
-import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
+import { OffstageConfig, OffstageEndpoint, EndpointSignature, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
 import { getGlobal, isMockAllowed, isPlaywright, isProduction } from './mode.js';
 
 const validateStatus = (config:OffstageConfig, response:Response) => {
@@ -113,7 +113,7 @@ export default (state:OffstageState) => {
     sessionStorage.setItem(key, entry);
   }
 
-  const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
+  const endpoint = <ReqType, ResType>(endpoint:EndpointSignature, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
     const func = async(requestData:ReqType = {} as ReqType, oneShotConfig:OffstageConfig = {}):Promise<ResType> => {
       const { serviceMethodName } = (func as any);
       const config = await getConfig(state, { serviceMethodName }, oneShotConfig);
