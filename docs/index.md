@@ -13,56 +13,48 @@ npm i offstage
 
 ## 2. Define service
 ```ts
-// src/example-service.ts
-import { service, endpoint } from 'offstage'
+import { service, endpoint } from 'offstage/core'
 
 export const { exampleService } = service({
-  foo: endpoint<{id:number},{message:string}>('GET /foo',
-    ({ id }) => ({ message: `some mock data for id: ${id}` }),
+  foo: endpoint<
+    {id:number}, // typed request
+    {message:string} // typed response
+  >('GET /foo', // endpoint method and path
+  ({ id }) => ({ message: `hello ${id}` }), // mock response for dev & testing
 });
+
 ```
 
 ## 3. Use service
 ```ts
-// src/app.ts
-import exampleService from './example-service';
-
-const data = await exampleService.foo({ id:2 });
-console.log(data); // { message:'some mock data for id: 2' }
+await exampleService.foo({ id:2 }); // { message:'hello 2' }
 ```
 
 # Usage with playwright
 
-Your mock data gets stripped out of production build. To still use mock data in your tests, you can use mount. It will intercept requests and respond with your mock data.
+Your mock data gets stripped out of production build. To still use mock data in your tests, you can use `attach()` from `offtsage/playwright`. It will intercept requests and respond with your mock data.
 
-## 4. intercept requests with mount
+## 4. intercept requests with attach
 ```ts
 // tests/example.spec.ts
-import { mount } from 'offstage';
-
-test.beforeEach(async(page) => {
-  await mount(page);
-  // requests of 'GET /foo' are now intercepted
-  // using mock callback defined in step 2
-});
+import { test } from '@playwright/test';
+import { attach } from 'offstage/playwright';
+attach(test); // requests of 'GET /foo' are now intercepted
 ```
 
 ## 5. optionally override responses
 ```ts
 // tests/override.spec.ts
-import { mount } from 'offstage';
+import { test } from '@playwright/test';
+import { attach } from 'offstage/playwright';
 import { exampleService } from '../src/example-service.ts';
-
-test.beforeEach(async(page) => {
-  await mount(page);
-});
+attach(test);
 
 test('testing with an override', async({page}) => {
   exampleService.foo.override((requestData,responseData) => {
     return { ...responseData, message: 'override works!' };
   });
-  // requests of 'GET /foo' are now intercepted
-  // and responded with { message:'override works! }
+  // requests of 'GET /foo' are now responded with { message:'override works! }
 });
 ```
 # Configuration
@@ -74,20 +66,21 @@ The configurators are called in turn with details of the current request. The re
 
 **6. Configuration**
 ```ts
-import { configure } from 'offstage';
+import { configure } from 'offstage/core';
 
 configure([
-  // every call gets the same baseURL
+  // every request gets the same baseURL by default:
   () => ({ baseURL: process.env.VITE_API_URL }),
 
-  // every call gets the same token
+  // every request gets the same token:
   () => ({ headers: { Authorization: `Bearer {token}` } }),
 
-  // exampleService.foo gets a different baseURL
-  ({ serviceMethodName }) => serviceMethodName === 'exampleService.foo'
+  // exampleService.hello gets a different baseURL:
+  ({ serviceMethodName }) => serviceMethodName === 'exampleService.hello'
     ? { baseURL: process.env.VITE_EXAMPLE_API_URL }
     : {}
 ]);
 ```
 
 Offstage uses `fetch()` behind the scenes so you can refer to https://developer.mozilla.org/en-US/docs/Web/API/fetch for most of the options. 
+

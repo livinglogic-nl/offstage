@@ -34,21 +34,7 @@ export default {
 
 ```
 
-## 2. Provide 'testInfo' in mount() calls
-
-Providing the Playwright `testInfo` object allows us to use the test name in Pact contracts:
-
-```ts
-// tests/example.spec.ts
-import { test, expect } from '@playwright/test';
-import { mount } from 'offstage';
-
-test.beforeEach(async ({ page }, testInfo) => {
-  await mount(page, testInfo);
-});
-```
-
-## 3. Generate Pact contracts
+## 2. Generate Pact contracts
 
 With the configuration in place:
 - run `npx playwright test`
