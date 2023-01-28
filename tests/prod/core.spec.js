@@ -282,7 +282,8 @@ test('minified takes less than 5kb', async() => {
     write: false,
     outfile: 'app.js',
   });
-  expect(result.outputFiles[0].text.length).toBeLessThan(5 * 1024);
+  const total = result.outputFiles[0].text.length;
+  expect(total).toBeLessThan(5 * 1024);
 });
 
   // test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
