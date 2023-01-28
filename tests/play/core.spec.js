@@ -42,9 +42,10 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
     ...defaultApp,
     'tests/app.spec.ts': `
       import { test, expect } from '@playwright/test';
-      import { mount } from 'offstage/playwright';
+      import { attach } from 'offstage/playwright';
+      attach(test);
+
       test('GET works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
@@ -53,7 +54,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('GET');
       });
       test('POST works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('subtract')),
           page.goto('http://localhost:5173/#/subtract'),
@@ -62,7 +62,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('POST');
       });
       test('PATCH works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('multiply')),
           page.goto('http://localhost:5173/#/multiply'),
@@ -71,7 +70,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('PATCH');
       });
       test('PUT works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('divide')),
           page.goto('http://localhost:5173/#/divide'),
@@ -80,7 +78,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('PUT');
       });
       test('DELETE works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('modulus')),
           page.goto('http://localhost:5173/#/modulus'),
@@ -89,7 +86,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('DELETE');
       });
       test('same path multiple methods works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/postSum'),
@@ -98,7 +94,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         expect(request.method()).toBe('POST');
       });
       test('JSONRPC works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('jsonrpc')),
           page.goto('http://localhost:5173/#/power'),
@@ -112,7 +107,6 @@ test('PLAY: mounts endpoints using existing mock functions', async() => {
         });
       });
       test('JSONRPC works multiple methods', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('jsonrpc')),
           page.goto('http://localhost:5173/#/jsonSum'),
@@ -136,10 +130,11 @@ test('PLAY: can override an endpoint for a single test', async() => {
     ...defaultApp,
     'tests/app.spec.ts': `
       import { test, expect } from '@playwright/test';
-      import { mount } from 'offstage/playwright';
+      import { attach } from 'offstage/playwright';
       import { mathService } from '../src/math-service.js';
+      attach(test);
+
       test('GET override works', async({ page }) => {
-        await mount(page);
         mathService.sum.override(() => 4);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
@@ -150,7 +145,6 @@ test('PLAY: can override an endpoint for a single test', async() => {
       });
 
       test('GET works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
@@ -170,9 +164,10 @@ test('PLAY: mounts endpoints using existing mock functions commonjs', async() =>
     'package.json': JSON.stringify({}),
     'tests/app.spec.ts': `
       import { test, expect } from '@playwright/test';
-      import { mount } from 'offstage/playwright';
+      import { attach } from 'offstage/playwright';
+      attach(test);
+
       test('GET works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
@@ -192,10 +187,11 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
     'package.json': JSON.stringify({}),
     'tests/app.spec.ts': `
       import { test, expect } from '@playwright/test';
-      import { mount } from 'offstage/playwright';
+      import { attach } from 'offstage/playwright';
       import { mathService } from '../src/math-service.js';
+      attach(test);
+
       test('GET override works', async({ page }) => {
-        await mount(page);
         mathService.sum.override(() => 4);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
@@ -206,7 +202,6 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
       });
 
       test('GET works', async({ page }) => {
-        await mount(page);
         const [request] = await Promise.all([
           page.waitForRequest(req => req.url().includes('sum')),
           page.goto('http://localhost:5173/#/sum'),
@@ -240,11 +235,11 @@ test('PLAY: can cache responses', async() => {
     `,
     'tests/app.spec.ts': `
       import { test, expect } from '@playwright/test';
-      import { mount } from 'offstage/playwright';
+      import { attach } from 'offstage/playwright';
       import { mathService } from '../src/math-service.js';
+      attach(test);
 
       test('Because of caching, only 2 of the 3 requests make it to playwright', async({ page }) => {
-        await mount(page);
         let total = 0;
         page.on('request', req => {
           if(req.url().includes('sum')) {
