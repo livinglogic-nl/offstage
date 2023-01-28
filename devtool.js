@@ -22,7 +22,7 @@ g { fill: white; }
 
   const { offstage } = window;
   const state = {
-    menuOpen: true,
+    menuOpen: false,
     filters: [],
   }
 
