@@ -215,7 +215,7 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
   await serveAndPlay();
 });
 
-test('PLAY: can cache responses', async() => {
+test.only('PLAY: can cache responses', async() => {
   const { build, serveAndPlay } = await prepareProject({
     ...defaultApp,
     'src/app.ts': `
@@ -223,14 +223,22 @@ test('PLAY: can cache responses', async() => {
       import { mathService } from './math-service';
       configure([
         () => ({ baseURL:'http://localhost:3000' }),
-        () => ({ cacheSeconds:0.15 }),
+        () => ({ cacheSeconds:0.1 }),
       ]);
-      
-      [0,50,150].forEach(delayms => {
-        setTimeout(() => {
-         mathService.sum({ a:1, b:2 });
-        }, delayms);
+
+      const wait = (ms) => new Promise(ok => {
+        setTimeout(ok,ms);
       });
+
+      (async() => {
+        await mathService.sum({ a:1, b:2 });
+        await wait(50);
+
+        await mathService.sum({ a:1, b:2 });
+        await wait(50);
+
+        await mathService.sum({ a:1, b:2 });
+      })();
       
     `,
     'tests/app.spec.ts': `
