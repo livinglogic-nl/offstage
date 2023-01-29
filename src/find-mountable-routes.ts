@@ -14,7 +14,7 @@ const entriesWithOffstage = async() => {
       file,
       content,
     }
-  }))).filter((obj:any) => obj.content.includes(`from 'offstage/core'`));
+  }))).filter((obj:any) => obj.content.includes(`from 'offstage/`));
 }
 
 

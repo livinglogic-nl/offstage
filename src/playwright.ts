@@ -2,17 +2,23 @@ import useMount from './use-mount.js';
 import { state } from './state.js';
 
 
-interface BeforeEachArgs { page:any }
-type BeforeEachCallback = (args:BeforeEachArgs, testInfo:any) => Promise<void>;
-type BeforeEachFunc = (handler:BeforeEachCallback) => void;
+interface EachArgs { page:any }
+type EachCallback = (args:EachArgs, testInfo:any) => Promise<void>;
+type EachFunc = (handler:EachCallback) => void;
 
 interface Test {
-  beforeEach: BeforeEachFunc;
+  beforeEach: EachFunc;
+  afterEach: EachFunc;
 }
 
 const mount = useMount(state);
 export const attach = (test:Test) => {
   test.beforeEach(async({ page }, testInfo:any) => {
     await mount(page, testInfo);
+  });
+  test.afterEach(async({ page }) => {
+    await page.evaluate(() => {
+      delete (window as any).isOffstagePlaywright;
+    });
   });
 }
