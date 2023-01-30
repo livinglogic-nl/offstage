@@ -6,7 +6,7 @@ const injectDevtool = () => {
   if(getGlobal().document === undefined) { return; }
 
   const win = (window as any);
-  if(win.offstage !== undefined) { return; }
+  if(win.offstage !== undefined) { return win.offstage; }
 
   const offstage = {
     forceNetwork: false,

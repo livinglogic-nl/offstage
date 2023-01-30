@@ -234,6 +234,7 @@ label {
   flex: 1;
   padding: 10px;
   border-left: 1px solid #222;
+  overflow: auto;
 }
 
 `;
