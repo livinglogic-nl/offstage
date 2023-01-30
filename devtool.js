@@ -48,7 +48,6 @@ const build = () => {
     input.checked = isActive;
     input.onchange = (e) => {
       changeHandler(e.target.checked);
-      render();
     }
     return label;
   }
@@ -67,6 +66,7 @@ const build = () => {
       checkbox(menu, [ 'option' ], 'Force network', isForceNetwork(), () => {
         offstage.forceNetwork = !offstage.forceNetwork;
         state.menuOpen = false;
+        render();
       });
 
       const log = el(root, 'div', [ 'log' ]);
@@ -75,33 +75,42 @@ const build = () => {
         el(log, 'div', [ 'content' ], 'Force network enabled. Actual HTTP traffic is visible in your browsers devtools');
       } else {
         const content = el(log, 'div', [ 'content' ]);
-        offstage.history
-          .filter(({ serviceMethodName }) =>
-            state.filters.length === 0 || state.filters.includes(serviceMethodName)
-          )
-          .forEach(entry => {
-             el(content, 'div', [ 'entry' ], `
-                <div class="call">
-                  <span class="service-method">${entry.serviceMethodName}</span>
-                  <span class="date-time">${entry.date.toLocaleString()}</span>
-                </div>
-                <div class="endpoint">${entry.endpoint}</div>
-                <div class="request">${JSON.stringify(entry.requestData, null, 2)}</div>
-                <div class="response">${JSON.stringify(entry.responseData, null, 2)}</div>
-            `);
-          })
+
+        const renderContent = () => {
+          content.innerHTML = '';
+          offstage.history
+            .filter(({ serviceMethodName }) =>
+              state.filters.length === 0 || state.filters.includes(serviceMethodName)
+            )
+            .forEach(entry => {
+               el(content, 'div', [ 'entry' ], `
+                  <div class="call">
+                    <span class="service-method">${entry.serviceMethodName}</span>
+                    <span class="date-time">${entry.date.toLocaleString()}</span>
+                  </div>
+                  <div class="endpoint">${entry.endpoint}</div>
+                  <div class="request">${JSON.stringify(entry.requestData, null, 2)}</div>
+                  <div class="response">${JSON.stringify(entry.responseData, null, 2)}</div>
+              `);
+            })
+          content.scrollTo(0,0);
+        }
+        renderContent();
         const filter = el(log, 'div', [ 'filter' ]);
-        Object.entries(offstage.services).forEach(([serviceName, service]) =>
+        Object.entries(offstage.services).forEach(([serviceName, service]) => {
+          const group = el(filter, 'div', [ 'group' ]);
+          el(group, 'h2', [], serviceName);
           Object.keys(service).forEach(methodName => {
             const key = `${serviceName}.${methodName}`
             const count = offstage.history.filter(e => e.serviceMethodName === key).length;
 
             const isActive = state.filters.includes(key);
-            checkbox(filter, [], `${key} (${count})`, isActive, on => {
+            checkbox(group, [], `${methodName} (${count})`, isActive, on => {
               state.filters = on ? [...state.filters, key] : state.filters.filter(k => k != key);
+              renderContent();
             });
           })
-        );
+        });
       }
     }
   }
@@ -152,7 +161,8 @@ const styleContent = () => `
 }
 
 .force .logo {
-  border-color: green;
+  border: 2px solid #e00;
+  border-bottom: 0;
 }
 
 .logo {
@@ -182,7 +192,7 @@ label {
   background: #111;
   border: 1px solid #222;
   position: fixed;
-  width: 800px;
+  width: 880px;
   height: 400px;
   max-width: calc(100vw - 64px);
   max-height: calc(100vh - 64px);
@@ -231,10 +241,24 @@ label {
 }
 
 .log .filter {
-  flex: 2;
+  width: 280px;
   padding: 10px;
   border-left: 1px solid #222;
   overflow: auto;
+}
+
+.filter .group {
+  padding: 10px 0;
+}
+
+.filter .group h2 {
+  margin: 0;
+  margin-bottom: 4px;
+  font-size: 16px;
+  color: #f60;
+}
+.filter .group label {
+  padding-left: 4px;
 }
 
 `;
