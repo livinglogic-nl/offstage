@@ -231,7 +231,7 @@ label {
 }
 
 .log .filter {
-  flex: 1;
+  flex: 2;
   padding: 10px;
   border-left: 1px solid #222;
   overflow: auto;
