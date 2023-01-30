@@ -1,13 +1,26 @@
 # ![Offstage](../docs/logo-both.svg)
-## HTTP Client for faster development and testing
+## TypeScript HTTP Client for faster development and testing
+
+Offstage is a HTTP request library, with a focus on **mocking** and **testing**.
+
+You define your mock data **once**, Offstage then allows you to:
+
+- Click through your app without a backend
+- Playwright test the production build
+- Verify backend compatibility by auto generating Pact files
+
+
+## Infographic!
+![](../docs/infographic.svg)
+
+# Highlights
 
 - 🚀 Easily define a **TypeScript Request API**
 - ⚡️ **Mock data** for development (stripped out of production build)
 - 🎭 **Same** mock data for Playwright (to test the production build)
 - 🦄 **Override** mock data (for testing specific scenarios)
 - 🤝 Automatic **Pact** tests (to verify compatability)
-- 🔥 **Small** footprint (offstage adds ~2kb to your production build)
-
+- 🔥 **Small** footprint (adds less than 5kb to your production build)
 
 # Getting started
 
@@ -18,7 +31,7 @@ npm i offstage
 
 ## 2. Define service
 ```ts
-import { service, endpoint } from 'offstage'
+import { service, endpoint } from 'offstage/core'
 
 export const { exampleService } = service({
   foo: endpoint<
@@ -37,36 +50,29 @@ await exampleService.foo({ id:2 }); // { message:'hello 2' }
 
 # Usage with playwright
 
-Your mock data gets stripped out of production build. To still use mock data in your tests, you can use mount. It will intercept requests and respond with your mock data.
+Your mock data gets stripped out of production build. To still use mock data in your tests, you can use `attach()` from `offtsage/playwright`. It will intercept requests and respond with your mock data.
 
-## 4. intercept requests with mount
+## 4. intercept requests with attach
 ```ts
 // tests/example.spec.ts
-import { mount } from 'offstage';
-
-test.beforeEach(async(page) => {
-  await mount(page);
-  // requests of 'GET /foo' are now intercepted
-  // using mock callback defined in step 2
-});
+import { test } from '@playwright/test';
+import { attach } from 'offstage/playwright';
+attach(test); // requests of 'GET /foo' are now intercepted
 ```
 
 ## 5. optionally override responses
 ```ts
 // tests/override.spec.ts
-import { mount } from 'offstage';
+import { test } from '@playwright/test';
+import { attach } from 'offstage/playwright';
 import { exampleService } from '../src/example-service.ts';
-
-test.beforeEach(async(page) => {
-  await mount(page);
-});
+attach(test);
 
 test('testing with an override', async({page}) => {
   exampleService.foo.override((requestData,responseData) => {
     return { ...responseData, message: 'override works!' };
   });
-  // requests of 'GET /foo' are now intercepted
-  // and respond with { message:'override works! }
+  // requests of 'GET /foo' are now responded with { message:'override works! }
 });
 ```
 # Configuration
@@ -78,7 +84,7 @@ The configurators are called in turn with details of the current request. The re
 
 **6. Configuration**
 ```ts
-import { configure } from 'offstage';
+import { configure } from 'offstage/core';
 
 configure([
   // every request gets the same baseURL by default:

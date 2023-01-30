@@ -34,21 +34,7 @@ export default {
 
 ```
 
-## 2. Provide 'testInfo' in mount() calls
-
-Providing the Playwright `testInfo` object allows us to use the test name in Pact contracts:
-
-```ts
-// tests/example.spec.ts
-import { test, expect } from '@playwright/test';
-import { mount } from 'offstage';
-
-test.beforeEach(async ({ page }, testInfo) => {
-  await mount(page, testInfo);
-});
-```
-
-## 3. Generate Pact contracts
+## 2. Generate Pact contracts
 
 With the configuration in place:
 - run `npx playwright test`
@@ -59,6 +45,6 @@ To automatically publish to a Pact broker, supply the following environment to `
 - `OFFSTAGE_PACT_BROKER_URL`: url of Pact broker
 - `OFFSTAGE_PACT_BROKER_USERNAME`: username for publishing
 - `OFFSTAGE_PACT_BROKER_PASSWORD`: password for publishing
-- `OFFSTAGE_PACT_COMMIT`: blabla
-- `OFFSTAGE_PACT_BRANCH`: blabla
+- `OFFSTAGE_PACT_COMMIT`: current git commit sha
+- `OFFSTAGE_PACT_BRANCH`: current git branch
 

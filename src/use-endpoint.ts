@@ -1,35 +1,7 @@
-import qs from 'qs';
+import qs from './qust.js';
 import { getConfig } from "./get-config.js";
-import { OffstageConfig, OffstageEndpoint, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
-
-const isOffstagePlaywright = () => (window as any).isOffstagePlaywright
-
-const allowMock = () => {
-  try {
-    if(isOffstagePlaywright()) {
-      return false;
-    }
-  } catch(_) {}
-  return true;
-}
-
-const isImportFromTest = () => {
-  try {
-    if(process.env.OFFSTAGE_IMPORT_FROM_TEST !== undefined) {
-      return true;
-    }
-  } catch(_) {}
-  return false;
-}
-
-const isProduction = () => {
-  try {
-    if(process.env.NODE_ENV === 'production') {
-      return true;
-    }
-  } catch(_) {}
-  return false;
-}
+import { OffstageConfig, OffstageEndpoint, EndpointSignature, OffstageOverrideHandler, OffstageResponseError, OffstageState } from "./types";
+import { getGlobal, isMockAllowed, isPlaywright, isProduction } from './mode.js';
 
 const validateStatus = (config:OffstageConfig, response:Response) => {
   const defaultFunc = (status:number) => status >= 200 && status < 300;
@@ -60,7 +32,7 @@ export default (state:OffstageState) => {
     if(method !== 'GET') {
       config.body = JSON.stringify(restData);
     }
-    if(isOffstagePlaywright()) {
+    if(isPlaywright()) {
       config.headers = { ...config.headers, 'x-offstage-request': JSON.stringify(requestData) };
     }
 
@@ -141,7 +113,7 @@ export default (state:OffstageState) => {
     sessionStorage.setItem(key, entry);
   }
 
-  const endpoint = <ReqType, ResType>(endpoint:string, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
+  const endpoint = <ReqType, ResType>(endpoint:EndpointSignature, mock:(req:ReqType) => ResType):((args:ReqType) => Promise<ResType>) & OffstageEndpoint => {
     const func = async(requestData:ReqType = {} as ReqType, oneShotConfig:OffstageConfig = {}):Promise<ResType> => {
       const { serviceMethodName } = (func as any);
       const config = await getConfig(state, { serviceMethodName }, oneShotConfig);
@@ -149,10 +121,11 @@ export default (state:OffstageState) => {
       if(cachedResponse !== null) {
         return cachedResponse;
       }
-      if(allowMock() && !isProduction()) {
+      if(isMockAllowed() && !isProduction()) {
         const responseData = mock(requestData);
-        if(!isImportFromTest()) {
-          console.debug(`[offstage]`, endpoint, requestData, responseData);
+        const { addHistory } = getGlobal()?.offstage ?? {};
+        if(addHistory) {
+          addHistory({ date:new Date(), serviceMethodName, endpoint, requestData, responseData });
         }
         saveCache(config, serviceMethodName, requestData, responseData);
         return responseData;

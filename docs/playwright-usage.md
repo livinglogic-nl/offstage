@@ -7,38 +7,26 @@ nav_order: 3
 # Playwright usage
 
 
-## The mount() function
+## The attach() function
 
 Because mock data is stripped away from the production build, we need Playwright to intercept requests to our service endpoints.
 
-Use the `mount()` function to mount your existing mock data during Playwright testing the production build.
+Use the `attach()` function to mount your existing mock data during Playwright testing the production build.
 
 ```ts
-import { test, expect } from '@playwright/test';
-import { mount } from 'offstage';
-
-test.beforeEach(async({page}) => {
-  await mount(page);
-});
+import { test } from '@playwright/test';
+import { attach } from 'offstage';
+attach(test);
 ```
 
 ## endpoint.override()
-Use `endpoint.override()` to return a different response during the scope of a test.
+Use `endpoint.override()` in your playwright test to return a different response during the scope of a test.
+
 ```ts
 import { test, expect } from '@playwright/test';
-import { mount } from 'offstage';
+import { attach } from 'offstage';
 import { exampleService } from '../src/example-service';
-
-test.beforeEach(async({page}) => {
-  await mount(page);
-});
-
-test('a test with override', async({ page }) => {
-  exampleService.hello.override((req,res) => ({
-      ...res,
-      message: 'override works!',
-  }));
-});
+attach(test);
 
 test('a test with conditional override', async({ page }) => {
   exampleService.hello.override((req,res) => {
@@ -54,12 +42,9 @@ test('a test with conditional override', async({ page }) => {
 `endpoint.waitForTrigger()` returns a trigger function. The next response is held until the trigger function is called.
 ```ts
 import { test, expect } from '@playwright/test';
-import { mount } from 'offstage';
+import { attach } from 'offstage';
 import { exampleService } from '../src/example-service';
-
-test.beforeEach(async({page}) => {
-  await mount(page);
-});
+attach(test);
 
 test('a test with waitForTrigger', async({ page }) => {
   const trigger = exampleService.hello.waitForTrigger();

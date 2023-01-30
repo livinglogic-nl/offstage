@@ -7,14 +7,28 @@
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
   "exports": {
-    ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js"
+    "./playwright": {
+      "import": "./dist/mjs/playwright.js",
+      "require": "./dist/cjs/playwright.js"
+    },
+    "./core": {
+      "import": "./dist/mjs/core.js",
+      "require": "./dist/cjs/core.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "core": [
+        "./dist/mjs/core.js"
+      ],
+      "playwright": [
+        "./dist/mjs/playwright.js"
+      ]
     }
   },
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && sh ./fixup",
-    "test": "node utils/test-all.js",
+    "test": "npx playwright test",
     "semantic-release": "semantic-release"
   },
   "keywords": [],
@@ -22,12 +36,13 @@
   "license": "ISC",
   "dependencies": {
     "esbuild": "^0.15.16",
-    "fast-glob": "^3.2.12",
-    "qs": "^6.11.0"
+    "fast-glob": "^3.2.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.29.2",
     "@types/node": "^18.11.9",
     "@types/qs": "^6.9.7",
+    "playwright": "^1.29.2",
     "semantic-release": "^19.0.5",
     "serve-handler": "^6.1.5",
     "typescript": "^4.9.3"
@@ -37,6 +52,12 @@
     "url": "https://github.com/livinglogic-nl/offstage.git"
   },
   "release": {
-    "branches": "main"
+    "branches": [
+      "main",
+      {
+        "name": "beta",
+        "prerelease": true
+      }
+    ]
   }
 }

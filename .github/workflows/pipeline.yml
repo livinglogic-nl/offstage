@@ -5,13 +5,15 @@ jobs:
   Main:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.28.0-focal
+      image: mcr.microsoft.com/playwright:v1.29.2-focal
       options: --user root
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: 'Workaround permissions issue'
         run: chown $(whoami):$(whoami) -R .
+      - name: install node with fetch support (not needed from PW 1.31)
+        run: curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
       - run: git config --global --add safe.directory /__w/offstage/offstage
       - run: npm ci
       - run: npm run build
