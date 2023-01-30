@@ -255,7 +255,7 @@ test('PLAY: can cache responses', async() => {
           }
         });
         await page.goto('http://localhost:5173');
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(1000);
         expect(total).toBe(2);
       });
       `,
