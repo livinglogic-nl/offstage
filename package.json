@@ -16,6 +16,16 @@
       "require": "./dist/cjs/core.js"
     }
   },
+  "typesVersions": {
+    "*": {
+      "core": [
+        "./dist/mjs/core.js"
+      ],
+      "playwright": [
+        "./dist/mjs/playwright.js"
+      ]
+    }
+  },
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && sh ./fixup",
     "test": "npx playwright test",
