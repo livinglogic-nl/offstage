@@ -9,12 +9,12 @@
   "module": "dist/mjs/core.js",
   "exports": {
     "./core": {
-      "default": "./dist/cjs/core.js",
+      "require": "./dist/cjs/core.js",
       "types": "./dist/cjs/core.d.ts",
       "import": "./dist/mjs/core.js"
     },
     "./playwright": {
-      "default": "./dist/cjs/playwright.js",
+      "require": "./dist/cjs/playwright.js",
       "types": "./dist/cjs/playwright.d.ts",
       "import": "./dist/mjs/playwright.js"
     }
