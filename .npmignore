@@ -1,8 +1,9 @@
-demo/
 src/
 fixup
 tsconfig*
 reload.sh
 docs/
 utils/
+tests/
 .github
+playwright.config.ts
