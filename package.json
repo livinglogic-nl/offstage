@@ -4,26 +4,19 @@
   "description": "",
   "type": "module",
   "bin": "cli.js",
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
+  "main": "dist/cjs/core.js",
+  "types": "dist/cjs/core.d.ts",
+  "module": "dist/mjs/core.js",
   "exports": {
-    "./playwright": {
-      "import": "./dist/mjs/playwright.js",
-      "require": "./dist/cjs/playwright.js"
-    },
     "./core": {
-      "import": "./dist/mjs/core.js",
-      "require": "./dist/cjs/core.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "core": [
-        "./dist/mjs/core.js"
-      ],
-      "playwright": [
-        "./dist/mjs/playwright.js"
-      ]
+      "default": "./dist/cjs/core.js",
+      "types": "./dist/cjs/core.d.ts",
+      "import": "./dist/mjs/core.js"
+    },
+    "./playwright": {
+      "default": "./dist/cjs/playwright.js",
+      "types": "./dist/cjs/playwright.d.ts",
+      "import": "./dist/mjs/playwright.js"
     }
   },
   "scripts": {
