@@ -231,6 +231,8 @@ test('PLAY: can cache responses', async() => {
       });
 
       (async() => {
+        await wait(50);
+
         await mathService.sum({ a:1, b:2 });
         await wait(50);
 
@@ -249,13 +251,21 @@ test('PLAY: can cache responses', async() => {
 
       test('Because of caching, only 2 of the 3 requests make it to playwright', async({ page }) => {
         let total = 0;
+        let hasTwoTrigger;
+        const hasTwoPromise = new Promise(ok => {
+          hasTwoTrigger = ok;
+        });
         page.on('request', req => {
           if(req.url().includes('sum')) {
             total++;
+            if(total == 2) {
+              hasTwoTrigger();
+            }
           }
         });
         await page.goto('http://localhost:5173');
-        await page.waitForTimeout(1000);
+        await hasTwoPromise;
+        await page.waitForTimeout(200);
         expect(total).toBe(2);
       });
       `,
