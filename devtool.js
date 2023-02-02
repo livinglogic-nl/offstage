@@ -65,6 +65,11 @@ const build = () => {
       const menu = el(root, 'div', [ 'menu' ]);
       checkbox(menu, [ 'option' ], 'Force network', isForceNetwork(), () => {
         offstage.forceNetwork = !offstage.forceNetwork;
+        if(offstage.forceNetwork) {
+           localStorage.setItem('offstage-force-network', '1');
+        } else {
+           localStorage.removeItem('offstage-force-network');
+        }
         state.menuOpen = false;
         render();
       });
