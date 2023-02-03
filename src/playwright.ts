@@ -17,8 +17,11 @@ export const attach = (test:Test) => {
     await mount(page, testInfo);
   });
   test.afterEach(async({ page }) => {
-    await page.evaluate(() => {
-      delete (window as any).isOffstagePlaywright;
-    });
+    try {
+      await page.evaluate(() => {
+        delete (window as any).isOffstagePlaywright;
+      });
+    } catch(e) {
+    }
   });
 }
