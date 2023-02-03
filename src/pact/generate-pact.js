@@ -1,7 +1,7 @@
 import { getMatchingRules, getType, getTypeMap } from "./get-matching-rules.js";
 
 const objectToInteractionRequest = (object) => {
-  const { endpoint, path } = object;
+  let { endpoint, path } = object;
   let [method] = endpoint.split(' ');
 
   if(method === 'JSONRPC') {
@@ -18,8 +18,10 @@ const objectToInteractionRequest = (object) => {
     query: object.queryParams,
   }
 }
-const getProviderStates = (object) => {
-  const providerStates = [];
+const getProviderStates = (baseState, object) => {
+  const providerStates = [
+    baseState,
+  ];
   const { responses } = object;
   if(responses.overrideResponse) {
     const [a,b] = [responses.defaultResponse, responses.overrideResponse].map(getTypeMap);
@@ -68,8 +70,8 @@ const objectToInteractionResponse = (object) => {
 
 const descriptorToInteraction = (descriptor) => {
   const first = descriptor.objects[0];
-  const providerStates = getProviderStates(first);
   const description = first.title + ' ' + first.endpoint;
+  const providerStates = getProviderStates(description, first);
   return {
     description,
     request: objectToInteractionRequest(first),
