@@ -3,7 +3,6 @@ import fs from 'fs';
 const createPayload = (publishConfig, consumerName, providerName, contractContentJson) => ({
   pacticipantName: consumerName,
   pacticipantVersionNumber: publishConfig.commit,
-  pacticipantVersionNumber: (new Date()).getTime().toString(),
   branch: publishConfig.branch,
   contracts: [{
     consumerName,
