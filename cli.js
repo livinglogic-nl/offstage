@@ -4,6 +4,6 @@ const [,,cmd] = process.argv
 
 
 if(cmd === 'pact') {
-  import('./pact.js');
+  import('./dist/cjs/pact/index.js');
 }
 

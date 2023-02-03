@@ -1,6 +1,8 @@
+import fs from 'fs';
+import child_process from 'child_process';
 import { test, expect } from '@playwright/test';
 
-import { prepareProject }  from '../utils/prepare-project.js';
+import { prepareProject }  from './utils/prepare-project.js';
 
 const defaultApp = {
   'src/app.ts': `
@@ -333,3 +335,43 @@ test('PLAY: override responses are never cached', async() => {
   await build({ prod:true });
   await serveAndPlay();
 });
+
+test('PACT: generates Pact files', async() => {
+  const { dir, build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { attach } from 'offstage/playwright';
+      attach(test);
+
+      test('GET works', async({ page }) => {
+        const [request] = await Promise.all([
+          page.waitForRequest(req => req.url().includes('sum')),
+          page.goto('http://localhost:5173/#/sum'),
+        ]);
+        await expect(page.locator('"7"')).toBeVisible();
+        expect(request.method()).toBe('GET');
+      });
+      `,
+    'offstage.config.ts': `
+      export default {
+        pact: {
+          consumerName: 'OffstageDemo',
+          providerNames: {
+            mathService: 'MathService',
+          },
+        }
+      }
+      `,
+  });
+  await build({ prod:true });
+  await serveAndPlay();
+
+  child_process.execSync(`mkdir -p node_modules/.bin`, { cwd:dir });
+  child_process.execSync(`ln -s ../offstage/cli.js ./offstage`, { cwd:`${dir}/node_modules/.bin` });
+
+  child_process.execSync(`npx offstage pact`, { cwd:dir });
+  expect(fs.existsSync(`${dir}/pacts/OffstageDemo-MathService.json`)).toBe(true);
+
+});
+

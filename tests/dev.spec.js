@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { prepareProject }  from '../utils/prepare-project.js';
+import { prepareProject }  from './utils/prepare-project.js';
 
 test('DEV: calling an endpoint returns the mock data', async() => {
   const { build, run } = await prepareProject({

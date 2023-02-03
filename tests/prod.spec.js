@@ -1,8 +1,8 @@
 import esbuild from 'esbuild';
 import { test, expect } from '@playwright/test';
 
-import { prepareProject }  from '../utils/prepare-project.js';
-import { createServer }  from '../utils/create-server.js';
+import { prepareProject } from './utils/prepare-project.js';
+import { createServer } from './utils/create-server.js';
 
 const defaultApp = {
   'src/app.ts': `
