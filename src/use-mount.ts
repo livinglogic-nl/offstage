@@ -90,6 +90,12 @@ export default (state:any) => {
       console.log('[offstage] no services found in src/ directory.');
     }
 
+    const overrideNoCacheHeaders = (responses:any) => 
+      responses.overrideResponse ? {
+        'x-offstage-no-cache': '1',
+        'access-control-expose-headers': 'x-offstage-no-cache',
+      } : {};
+
     const jsonRPCMap:any = {};
     await Promise.all(mountable.map(async(config) => {
       const [method, url] = config.endpoint.split(' ');
@@ -108,7 +114,12 @@ export default (state:any) => {
           const requestData = JSON.parse(request.headers()['x-offstage-request']);
           const responses = await getCallResponses(config, requestData, page._offstage);
           handlePact(config, urlMatch![0], queryParams, bodyParams, responses);
-          route.fulfill({ body: JSON.stringify(finalResponse(responses)) });
+          route.fulfill({
+            body: JSON.stringify(finalResponse(responses)),
+            headers: {
+              ...overrideNoCacheHeaders(responses),
+            },
+          });
         });
       } else {
         const [,path, rpcMethod] = url.match(/(.+?)([^\/]+)$/);
@@ -130,8 +141,12 @@ export default (state:any) => {
             ,{} as any);
 
             handlePact(config, path, {}, requestData, packedResponses);
+
             route.fulfill({
-              body: JSON.stringify(finalResponse(packedResponses))
+              body: JSON.stringify(finalResponse(packedResponses)),
+              headers: {
+                ...overrideNoCacheHeaders(responses),
+              },
             });
           });
         }

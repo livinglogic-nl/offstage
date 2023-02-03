@@ -274,3 +274,62 @@ test('PLAY: can cache responses', async() => {
   await serveAndPlay();
 });
 
+test('PLAY: override responses are never cached', async() => {
+  const { build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'src/app.ts': `
+      import { configure } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' }),
+        () => ({ cacheSeconds:0.1 }),
+      ]);
+
+      const wait = (ms) => new Promise(ok => {
+        setTimeout(ok,ms);
+      });
+
+      (async() => {
+        await wait(50);
+
+        await mathService.sum({ a:1, b:2 });
+        await wait(50);
+
+        await mathService.sum({ a:1, b:2 });
+        await wait(50);
+
+        await mathService.sum({ a:1, b:2 });
+      })();
+      
+    `,
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { attach } from 'offstage/playwright';
+      import { mathService } from '../src/math-service.js';
+      attach(test);
+
+      test('Because of override, caching is disabled', async({ page }) => {
+        mathService.sum.override(() => 4);
+
+        let total = 0;
+        let hasThreeTrigger;
+        const hasThreePromise = new Promise(ok => {
+          hasThreeTrigger = ok;
+        });
+        page.on('request', req => {
+          if(req.url().includes('sum')) {
+            total++;
+            if(total == 3) {
+              hasThreeTrigger();
+            }
+          }
+        });
+        await page.goto('http://localhost:5173');
+        await hasThreePromise;
+        expect(total).toBe(3);
+      });
+      `,
+  });
+  await build({ prod:true });
+  await serveAndPlay();
+});

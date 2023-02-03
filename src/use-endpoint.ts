@@ -46,7 +46,7 @@ export default (state:OffstageState) => {
       e.responseData = resultData;
       throw e;
     }
-    return resultData;
+    return [ resultData, response ];
   }
 
   const handleJsonRpcRequest = async(endpoint:string, requestData:any, config:OffstageConfig) => {
@@ -62,8 +62,8 @@ export default (state:OffstageState) => {
     });
 
     const finalUrl = `${config.baseURL ?? ''}${path}`;
-    const result = await fetch(finalUrl, config);
-    const resultData = await result.json();
+    const response = await fetch(finalUrl, config);
+    const resultData = await response.json();
     if(resultData === undefined) {
       throw Error('A JSONRPC response must either have a result or an error');
     }
@@ -73,7 +73,7 @@ export default (state:OffstageState) => {
       Object.assign(e, resultData.error);
       throw e;
     }
-    return resultData.result;
+    return [ resultData.result, response ];
   }
 
   const calculateKey = async(serviceMethodName:string, requestData:any) => {
@@ -132,8 +132,10 @@ export default (state:OffstageState) => {
       }
 
       const handleFunc = endpoint.startsWith('JSONRPC') ? handleJsonRpcRequest : handleRestRequest;
-      const responseData = await handleFunc(endpoint, requestData, config);
-      saveCache(config, serviceMethodName, requestData, responseData);
+      const [ responseData, response] = await handleFunc(endpoint, requestData, config);
+      if(response.headers.get('x-offstage-no-cache') !== '1') {
+        saveCache(config, serviceMethodName, requestData, responseData);
+      }
       return responseData;
     }
     func.override = (handler:OffstageOverrideHandler) => {
