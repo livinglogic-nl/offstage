@@ -8,7 +8,7 @@ import generatePact from './generate-pact.js';
 import loadConfig from './load-config.js';
 
 const exitError = (str:string) => {
-  console.log(str)
+  console.log(str.trim())
   process.exit(1);
 }
 
@@ -24,15 +24,17 @@ const exitError = (str:string) => {
   const { consumerName, providerNames } = pactConfig;
   if(!consumerName) {
       exitError(`
-  Could not find consumer name
-  Please set pact.consumerName in offstage.config.ts
+Could not find consumer name.
+
+See https://livinglogic-nl.github.io/offstage/pact-usage.html for instructions.
       `);
   }
 
   if(!providerNames) {
       exitError(`
-  Could not find provider names
-  Please set pact.providerNames in offstage.config.ts
+Could not find provider names.
+
+See https://livinglogic-nl.github.io/offstage/pact-usage.html for instructions.
       `);
   }
 
@@ -99,7 +101,10 @@ const exitError = (str:string) => {
   if(publishConfig.broker.url) {
     await publishPacts(publishConfig, paths);
   } else {
-    console.log('Publish to Pact broker skipped because OFFSTAGE_PACT_BROKER_URL was not defined.');
+    console.log(`
+Publish to Pact broker skipped because OFFSTAGE_PACT_BROKER_URL was not defined.
+See https://livinglogic-nl.github.io/offstage/pact-usage.html for instructions.
+`.trim());
   }
 
 })();

@@ -11,6 +11,9 @@ Offstage can automatically generate Pact contracts based on the mock data you ha
 Pact facilitates contract testing. This allows you to ensure compatability without end-to-end tests. From https://docs.pact.io :
 > Pact is a code-first tool for testing HTTP and message integrations using contract tests. Contract tests assert that inter-application messages conform to a shared understanding that is documented in a contract. Without contract testing, the only way to ensure that applications will work correctly together is by using expensive and brittle integration tests.
 
+Offstage can generate Pact files and optionally upload them to a broker.
+
+This is takes care of most of the consumer part of Pact testing, please refer to https://pact.io/ to learn about the complete process.
 
 # Step by step
 This section assumes you already have Offstage working nicely with Playwright. If not, please follow [Playwright usage](playwright-usage.md) first.
