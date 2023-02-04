@@ -7,5 +7,10 @@ import { state } from './state.js';
 export const configure = useConfigure(state);
 export const service = useService();
 export const endpoint = useEndpoint(state);
+
+export const clearCache = () => Object.keys(sessionStorage)
+  .filter(key => key.startsWith('offstage-'))
+  .forEach(key => sessionStorage.removeItem(key));
+
 export const factory = <Type>(defaultObject:any) => (override = {}):Type => ({...defaultObject, ...override}) as Type;
 

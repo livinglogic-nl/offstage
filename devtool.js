@@ -1,3 +1,7 @@
+const clearCache = () => Object.keys(sessionStorage)
+  .filter(key => key.startsWith('offstage-'))
+  .forEach(key => sessionStorage.removeItem(key));
+
 const build = () => {
   const { offstage } = window;
   const state = {
@@ -64,6 +68,7 @@ const build = () => {
     if(state.menuOpen) {
       const menu = el(root, 'div', [ 'menu' ]);
       checkbox(menu, [ 'option' ], 'Force network', isForceNetwork(), () => {
+        clearCache();
         offstage.forceNetwork = !offstage.forceNetwork;
         if(offstage.forceNetwork) {
            localStorage.setItem('offstage-force-network', '1');
