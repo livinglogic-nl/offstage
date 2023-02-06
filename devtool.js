@@ -129,6 +129,7 @@ const build = () => {
   let visible = false;
   const setVisible = to => {
     if(visible === to) { return; }
+    clearCache();
     visible = to;
     if(visible) {
       document.body.appendChild(host);
