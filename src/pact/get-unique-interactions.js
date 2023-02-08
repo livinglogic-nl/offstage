@@ -1,8 +1,10 @@
 import fs from 'fs';
+import jsonTypeSignature from '../json-type-signature.js';
+
 export default async(jsonlFiles) => {
   const getHash = async(object) => [
-    JSON.stringify(object.requestData),
-    JSON.stringify(object.responseData),
+    JSON.stringify(jsonTypeSignature(object.requestData)),
+    JSON.stringify(jsonTypeSignature(object.responseData)),
     JSON.stringify(object.serviceName),
     JSON.stringify(object.methodName),
   ].join('');
