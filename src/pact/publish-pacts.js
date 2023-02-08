@@ -15,11 +15,17 @@ const createPayload = (publishConfig, consumerName, providerName, contractConten
 
 export default async(publishConfig, filesToPublish) => {
   for await(let file of filesToPublish) {
-    const [,consumerName,providerName] = file.match(/([^/]+)-([^/]+).json/);
     const contractContentJson = await fs.promises.readFile(file);
-    const payload = createPayload(publishConfig, consumerName, providerName, contractContentJson);
+    const contract = JSON.parse(contractContentJson);
 
-    const { token, username, password } = publishConfig;
+    const payload = createPayload(
+      publishConfig,
+      contract.consumer.name,
+      contract.provider.name,
+      contractContentJson
+    );
+
+    const { token, username, password } = publishConfig.broker;
     await fetch(publishConfig.broker.url + '/contracts/publish', {
       method: 'POST',
       body: JSON.stringify(payload),
