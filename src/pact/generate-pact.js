@@ -70,7 +70,7 @@ const objectToInteractionResponse = (object) => {
 
 const descriptorToInteraction = (descriptor) => {
   const first = descriptor.objects[0];
-  const description = first.title + ' ' + first.endpoint;
+  const description = first.title;
   const providerStates = getProviderStates(description, first);
   return {
     description,

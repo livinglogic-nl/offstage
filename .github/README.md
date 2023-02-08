@@ -19,7 +19,7 @@ You define your mock data **once**, Offstage then allows you to:
 - ⚡️ **Mock data** for development (stripped out of production build)
 - 🎭 **Same** mock data for Playwright (to test the production build)
 - 🦄 **Override** mock data (for testing specific scenarios)
-- 🤝 Automatic **Pact** tests (to verify compatability)
+- 🤝 Automatic **Pact** tests (to verify compatability) (experimental)
 - 🔥 **Small** footprint (adds less than 5kb to your production build)
 
 # Getting started

@@ -82,8 +82,12 @@ See https://livinglogic-nl.github.io/offstage/pact-usage.html for instructions.
 
   const {
     OFFSTAGE_PACT_BROKER_URL,
+
+    OFFSTAGE_PACT_BROKER_TOKEN,
+
     OFFSTAGE_PACT_BROKER_USERNAME,
     OFFSTAGE_PACT_BROKER_PASSWORD,
+
     OFFSTAGE_PACT_COMMIT,
     OFFSTAGE_PACT_BRANCH,
   } = process.env;
@@ -91,6 +95,9 @@ See https://livinglogic-nl.github.io/offstage/pact-usage.html for instructions.
   const publishConfig = {
     broker: {
       url: OFFSTAGE_PACT_BROKER_URL,
+
+      token: OFFSTAGE_PACT_BROKER_TOKEN,
+
       username: OFFSTAGE_PACT_BROKER_USERNAME,
       password: OFFSTAGE_PACT_BROKER_PASSWORD,
     },

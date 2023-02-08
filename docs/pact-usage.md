@@ -43,11 +43,16 @@ With the configuration in place:
 - run `npx playwright test`
 - run `npx offstage pact`
 
-To automatically publish to a Pact broker, supply the following environment to `npx offstage pact`:
 
+
+## 3. Publish to broker
+
+To automatically publish to a Pact broker, supply the following environment to `npx offstage pact`:
 - `OFFSTAGE_PACT_BROKER_URL`: url of Pact broker
-- `OFFSTAGE_PACT_BROKER_USERNAME`: username for publishing
-- `OFFSTAGE_PACT_BROKER_PASSWORD`: password for publishing
 - `OFFSTAGE_PACT_COMMIT`: current git commit sha
 - `OFFSTAGE_PACT_BRANCH`: current git branch
+- `OFFSTAGE_PACT_BROKER_TOKEN`: username for publishing
 
+When using pactfoundation/pact-broker Docker, you can use the following instead of a token:
+- `OFFSTAGE_PACT_BROKER_USERNAME`: username for publishing
+- `OFFSTAGE_PACT_BROKER_PASSWORD`: password for publishing
