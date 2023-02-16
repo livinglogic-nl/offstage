@@ -64,6 +64,11 @@ export default (state:OffstageState) => {
     const finalUrl = `${config.baseURL ?? ''}${path}`;
     const response = await fetch(finalUrl, config);
     const resultData = await response.json();
+    if(!validateStatus(config, response)) {
+      const e = new Error('Response status was considered an error') as OffstageResponseError;
+      e.responseData = resultData;
+      throw e;
+    }
     if(resultData === undefined) {
       throw Error('A JSONRPC response must either have a result or an error');
     }
