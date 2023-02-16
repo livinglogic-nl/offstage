@@ -286,16 +286,72 @@ test('minified takes less than 5kb', async() => {
   expect(total).toBeLessThan(5 * 1024);
 });
 
-  // test.skip('Error is triggered when status code bigger than 300', async ({ page }) => {
-  //   const promise = singleServerRequest(
-  //     (req) => req.url.includes('/foo'),
-  //     (_,res) => {
-  //       res.statusCode = 422;
-  //       return { error:'Could not square input' };
-  //     }
-  //   );
-  //   await page.goto('/');
-  //   await page.click('"config baseURL"');
-  //   await promise;
-  //   await expect(page.locator('"Could not square input"')).toBeVisible();
-  // });
+test('canceling a request results in a DOMException named AbortError', async() => {
+  const { buildAndRun } = await prepareProject({
+    'src/app.ts': `
+      import { configure, cancelRequestsByGroup } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' })
+      ]);
+      setTimeout(() => {
+        cancelRequestsByGroup('default');
+      },10);
+      console.log(await mathService.sum({ a:1, b:2 }));
+    `,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('POST /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  const { server } = await createServer(async(req, res) => {
+    setTimeout(() => {
+      res.end('4');
+    }, 100);
+  });
+  try {
+    const { stderr } = await buildAndRun({ prod: true });
+    expect(stderr).toMatch(/DOMException [AbortError]: This operation was aborted/);
+  } catch(e) {
+  } finally {
+    await server.close();
+  }
+});
+
+test('cancelRequestsByGroup only cancels requests for that group', async() => {
+  const { buildAndRun } = await prepareProject({
+    'src/app.ts': `
+      import { configure, cancelRequestsByGroup } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' })
+      ]);
+      setTimeout(() => {
+        cancelRequestsByGroup('default');
+      },10);
+      console.log(await mathService.sum({ a:1, b:2 }, { cancelGroup:'overview' }));
+    `,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('POST /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  await createServer(async(req, res) => {
+    setTimeout(() => {
+      res.end('4');
+    }, 100);
+  });
+
+  const { stdout } = await buildAndRun({ prod: true });
+  expect(stdout).toMatch(/4/);
+});

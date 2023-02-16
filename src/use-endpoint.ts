@@ -10,6 +10,23 @@ const validateStatus = (config:OffstageConfig, response:Response) => {
 }
 
 export default (state:OffstageState) => {
+  const createFetchRequest = async(url:string, options:any) => {
+    const controller = new AbortController();
+    const obj = {
+      cancelGroup: options.cancelGroup ?? 'default',
+      cancel: () => {
+        controller.abort();
+      },
+    }
+    state.activeRequests.add(obj);
+    return fetch(url, {
+      ...options,
+      signal: controller.signal,
+    }).finally(() => {
+      state.activeRequests.delete(obj);
+    });
+  }
+
   const handleRestRequest = async(endpoint:string, requestData:any, config:OffstageConfig) => {
     const restData = {...requestData};
     const [method,pathPlusQuery] = endpoint.split(' ');
@@ -39,7 +56,7 @@ export default (state:OffstageState) => {
     const getParams = params ? '?' + qs.stringify(params) : '';
     const finalUrl = `${config.baseURL ?? ''}${url}${getParams}`;
 
-    const response = await fetch(finalUrl, config);
+    const response = await createFetchRequest(finalUrl, config);
     const resultData = await response.json();
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
@@ -62,7 +79,7 @@ export default (state:OffstageState) => {
     });
 
     const finalUrl = `${config.baseURL ?? ''}${path}`;
-    const response = await fetch(finalUrl, config);
+    const response = await createFetchRequest(finalUrl, config);
     const resultData = await response.json();
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;

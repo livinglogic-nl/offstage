@@ -44,6 +44,7 @@ export interface OffstageState {
   configurators:OffstageConfigurator[];
   rootConfig?:any;
   currentContext?:any;
+  activeRequests:Set<any>;
 }
 
 

@@ -6,5 +6,6 @@ export const state:OffstageState = {
     pact: {
     },
   },
+  activeRequests: new Set(),
 };
 

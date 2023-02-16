@@ -50,8 +50,11 @@ A configurator is a user-defined function that optionally takes a OffstageConfig
   /** If cacheSeconds is defined, succesful response data is cached and reused if within cacheSeconds **/
   cacheSeconds?:number;
 
-  /** validateStatus allows to specify wether response status is considered an error **/
+  /** validateStatus allows to specify whether response status is considered an error **/
   validateStatus?:(status:number) => boolean; 
+
+  /** cancelRequestsByGroup will cancel all requests that belong to the same cancelGroup **/
+  cancelGroup?:string;
 
   // ... optional fetch() options
 }
