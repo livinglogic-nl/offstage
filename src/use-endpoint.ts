@@ -53,6 +53,15 @@ export default (state:OffstageState) => {
       config.headers = { ...config.headers, 'x-offstage-request': JSON.stringify(requestData) };
     }
 
+    const getHeader = (config:any, name:string) => {
+      if(!config.headers) { return undefined; }
+      const key = Object.keys(config.headers).find(key => key.match(new RegExp(name,'i')));
+      return key ? config.headers[key] : undefined;
+    }
+    if(getHeader(config, 'Content-Type') === undefined) {
+      config.headers = { ...config.headers, 'Content-Type': 'application/json' };
+    }
+
     const getParams = params ? '?' + qs.stringify(params) : '';
     const finalUrl = `${config.baseURL ?? ''}${url}${getParams}`;
 
