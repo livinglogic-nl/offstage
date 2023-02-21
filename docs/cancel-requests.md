@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Cancel requests
-nav_order: 6
+nav_order: 5
 ---
 
 # Cancel requests
