@@ -70,6 +70,7 @@ export default (state:OffstageState) => {
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
       e.responseData = resultData;
+      e.responseStatus = response.status;
       throw e;
     }
     return [ resultData, response ];

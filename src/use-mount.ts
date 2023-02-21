@@ -17,12 +17,19 @@ export default (state:any) => {
     }
     const defaultResponse = await serviceMethod(requestData);
     const override = mods.override[serviceMethod.serviceMethodName];
+    const overrideMeta = {
+      status: 200,
+    };
+    const utils = {
+      responseStatus: (status:number) => overrideMeta.status = status,
+    }
     return {
       defaultResponse,
       ...(override
-        ? { overrideResponse: await override(requestData, defaultResponse) }
+        ? { overrideResponse: await override(requestData, defaultResponse, utils) }
         : {}
       ),
+      overrideMeta,
     };
   }
 
@@ -64,6 +71,7 @@ export default (state:any) => {
     }
   }
   const finalResponse = (responses:any) => responses.overrideResponse ?? responses.defaultResponse;
+  const finalStatus = (responses:any) => responses.overrideResponse ? responses.overrideMeta.status : 200;
 
   const mount = async(pageObject:any, testInfo?:any) => {
     const page = pageObject.page ?? pageObject;
@@ -115,6 +123,7 @@ export default (state:any) => {
           const responses = await getCallResponses(config, requestData, page._offstage);
           handlePact(config, urlMatch![0], queryParams, bodyParams, responses);
           route.fulfill({
+            status: finalStatus(responses),
             body: JSON.stringify(finalResponse(responses)),
             headers: {
               ...overrideNoCacheHeaders(responses),

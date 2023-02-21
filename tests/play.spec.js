@@ -375,3 +375,40 @@ test('PACT: generates Pact files', async() => {
 
 });
 
+test('PLAY: can override response status', async() => {
+  const { build, serveAndPlay } = await prepareProject({
+    ...defaultApp,
+    'src/app.ts': `
+      import { configure } from 'offstage/core';
+      import { mathService } from './math-service';
+      configure([
+        () => ({ baseURL:'http://localhost:3000' })
+      ]);
+      (async() => {
+        try {
+          await mathService.sum({ a:5, b:2 });
+        } catch(e) {
+          document.body.innerHTML = '<div class="error">'+e.responseStatus+'</div>';
+        }
+      })();
+    `,
+    'tests/app.spec.ts': `
+      import { test, expect } from '@playwright/test';
+      import { attach } from 'offstage/playwright';
+      import { mathService } from '../src/math-service.js';
+      attach(test);
+
+      test('App should print response status of 401', async({ page }) => {
+        mathService.sum.override((_,res, { responseStatus }) => {
+          responseStatus(401);
+          return res;
+        });
+        await page.goto('http://localhost:5173');
+        await expect(page.locator('.error')).toHaveText('401');
+      });
+      `,
+  });
+  await build({ prod:true });
+  await serveAndPlay();
+});
+

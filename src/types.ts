@@ -48,7 +48,11 @@ export interface OffstageState {
 }
 
 
-export type OffstageOverrideHandler = (requestData:any, responseData:any) => any;
+interface OverrideUtils {
+  responseStatus: (status:number) => void;
+}
+
+export type OffstageOverrideHandler = (requestData:any, responseData:any, overrideUtils:OverrideUtils) => any;
 
 export interface OffstageEndpoint {
   override:(handler:OffstageOverrideHandler) => void;
@@ -60,6 +64,7 @@ export type OffstageService = Record<string,OffstageEndpoint>;
 
 export interface OffstageResponseError extends Error {
   responseData: any;
+  responseStatus: number;
 }
 
 type EndpointMethod = 'GET'| 'POST'| 'PATCH'| 'PUT'| 'DELETE'| 'JSONRPC'
