@@ -355,3 +355,24 @@ test('cancelRequestsByGroup only cancels requests for that group', async() => {
   const { stdout } = await buildAndRun({ prod: true });
   expect(stdout).toMatch(/4/);
 });
+
+test('Empty JSON response is allowed', async() => {
+  const { buildAndRun } = await prepareProject({
+    ...defaultApp,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('GET /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  await createServer((req, res) => res.end(''));
+  const { stdout, stderr } = await buildAndRun({ prod: true });
+  expect(stderr).toHaveLength(0);
+  expect(stdout).toContain('undefined');
+
+
+});

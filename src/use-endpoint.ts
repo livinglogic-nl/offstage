@@ -66,7 +66,9 @@ export default (state:OffstageState) => {
     const finalUrl = `${config.baseURL ?? ''}${url}${getParams}`;
 
     const response = await createFetchRequest(finalUrl, config);
-    const resultData = await response.json();
+
+    const text = await response.text();
+    const resultData = text.length ? JSON.parse(text) : undefined;
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
       e.responseData = resultData;
