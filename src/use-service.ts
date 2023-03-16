@@ -21,7 +21,7 @@ const injectDevtool = () => {
   win.offstage = offstage;
 
   const script = document.createElement('script');
-  script.src = 'node_modules/offstage/devtool.js';
+  script.src = '/node_modules/offstage/devtool.js';
   document.head.appendChild(script);
   return win.offstage;
 }
