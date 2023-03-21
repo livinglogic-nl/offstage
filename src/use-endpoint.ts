@@ -151,6 +151,7 @@ export default (state:OffstageState) => {
     const func = async(requestData:ReqType = {} as ReqType, oneShotConfig:OffstageConfig = {}):Promise<ResType> => {
       const { serviceMethodName } = (func as any);
       const config = await getConfig(state, { serviceMethodName }, oneShotConfig);
+
       const cachedResponse = await loadCache(config, serviceMethodName, requestData);
       if(cachedResponse !== null) {
         return cachedResponse;
@@ -166,11 +167,19 @@ export default (state:OffstageState) => {
       }
 
       const handleFunc = endpoint.startsWith('JSONRPC') ? handleJsonRpcRequest : handleRestRequest;
-      const [ responseData, response] = await handleFunc(endpoint, requestData, config);
-      if(response.headers.get('x-offstage-no-cache') !== '1') {
-        saveCache(config, serviceMethodName, requestData, responseData);
+      try {
+        const [ responseData, response ] = await handleFunc(endpoint, requestData, config);
+        if(response.headers.get('x-offstage-no-cache') !== '1') {
+          saveCache(config, serviceMethodName, requestData, responseData);
+        }
+        return responseData;
+      } catch(e) {
+        if(config.onError) {
+          return config.onError(e as Error);
+        } else {
+          throw e;
+        }
       }
-      return responseData;
     }
     func.override = (handler:OffstageOverrideHandler) => {
       state.currentContext!._offstage.override[(func as any).serviceMethodName] = handler;

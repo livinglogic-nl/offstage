@@ -33,6 +33,7 @@ export interface OffstageConfig extends RequestInit {
   baseURL?:string;
   cacheSeconds?:number;
   validateStatus?:(status:number) => boolean;
+  onError?:(e:Error) => any;
 }
 
 export type OffstageConfiguratorAsync = (context:OffstageConfiguratorContext) => Promise<OffstageConfig|undefined>;

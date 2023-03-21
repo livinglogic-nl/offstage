@@ -373,6 +373,42 @@ test('Empty JSON response is allowed', async() => {
   const { stdout, stderr } = await buildAndRun({ prod: true });
   expect(stderr).toHaveLength(0);
   expect(stdout).toContain('undefined');
-
-
 });
+
+test('if onError is set and called without throwing, its result is used as response', async() => {
+  const { buildAndRun } = await prepareProject({
+  'src/app.ts': `
+    import { configure } from 'offstage/core';
+    import { mathService } from './math-service';
+    configure([
+      () => ({ baseURL:'http://localhost:3000' }),
+      () => ({ onError:(e) => {
+        console.log('caught error');
+        return 3;
+      }}),
+    ]);
+    console.log(await mathService.sum({ a:1, b:2 }));
+  `,
+    'src/math-service.ts': `
+      import { service, endpoint } from 'offstage/core';
+      export const { mathService } = service({
+        sum: endpoint<
+          {a:number, b:number},
+          number
+        >('GET /sum', ({ a, b }) => a + b)
+      })
+    `
+  });
+  const state = await createServer((req, res) => {
+    res.statusCode = 500;
+    res.end('4');
+  });
+  const { stdout } = await buildAndRun({ prod: true });
+  expect(stdout.split('\n')).toContain('caught error');
+  expect(stdout.split('\n')).toContain('3');
+
+  const { lastRequest } = state;
+  expect(lastRequest.method).toBe('GET');
+  expect(lastRequest.url).toBe('/sum?a=1&b=2');
+});
+
