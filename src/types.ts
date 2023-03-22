@@ -64,6 +64,7 @@ export interface OffstageEndpoint {
 export type OffstageService = Record<string,OffstageEndpoint>;
 
 export interface OffstageResponseError extends Error {
+  requestData: any;
   responseData: any;
   responseStatus: number;
 }

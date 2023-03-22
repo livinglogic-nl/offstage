@@ -71,6 +71,7 @@ export default (state:OffstageState) => {
     const resultData = text.length ? JSON.parse(text) : undefined;
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
+      e.requestData = requestData;
       e.responseData = resultData;
       e.responseStatus = response.status;
       throw e;
@@ -95,6 +96,7 @@ export default (state:OffstageState) => {
     const resultData = await response.json();
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
+      e.requestData = requestData;
       e.responseData = resultData;
       throw e;
     }
