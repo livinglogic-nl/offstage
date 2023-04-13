@@ -152,6 +152,7 @@ export default (state:any) => {
             handlePact(config, path, {}, requestData, packedResponses);
 
             route.fulfill({
+              status: finalStatus(responses),
               body: JSON.stringify(finalResponse(packedResponses)),
               headers: {
                 ...overrideNoCacheHeaders(responses),
