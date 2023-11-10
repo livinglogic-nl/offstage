@@ -9,6 +9,8 @@ You define your mock data **once**, Offstage then allows you to:
 - Playwright test the production build
 - Verify backend compatibility by auto generating Pact files
 
+## Breaking
+- From now on defaults to network mode
 
 ## Infographic!
 ![](./docs/infographic.svg)
