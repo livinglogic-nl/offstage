@@ -71,9 +71,9 @@ const build = () => {
         clearCache();
         offstage.forceNetwork = !offstage.forceNetwork;
         if(offstage.forceNetwork) {
-           localStorage.setItem('offstage-force-network', '1');
+           localStorage.setItem('offstage-mock', '1');
         } else {
-           localStorage.removeItem('offstage-force-network');
+           localStorage.removeItem('offstage-mock');
         }
         state.menuOpen = false;
         render();

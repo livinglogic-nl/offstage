@@ -9,7 +9,7 @@ const injectDevtool = () => {
   if(win.offstage !== undefined) { return win.offstage; }
 
   const offstage = {
-    forceNetwork: localStorage.getItem('offstage-force-network') ? true : false,
+    forceNetwork: localStorage.getItem('offstage-mock') ? false : true,
     services: {},
     history: [],
     onHistoryUpdate: () => {},
