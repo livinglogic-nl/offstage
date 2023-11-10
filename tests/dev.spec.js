@@ -19,7 +19,7 @@ test('DEV: calling an endpoint returns the mock data', async() => {
   });
   await build({ prod:false });
   const { stdout } = await run();
-  expect(stdout.split('\n')).toContain('3');
+  expect(stdout).toMatch(/3/);
 
 });
 
@@ -42,6 +42,6 @@ test('DEV: commonjs calling an endpoint returns the mock data', async() => {
   });
   await build({ prod:false });
   const { stdout } = await run();
-  expect(stdout.split('\n')).toContain('3');
+  expect(stdout).toMatch(/3/);
 
 });

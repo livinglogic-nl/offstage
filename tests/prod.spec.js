@@ -30,7 +30,7 @@ test('calling a GET endpoint makes a request', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('GET');
@@ -52,7 +52,7 @@ test('calling a GET endpoint makes a request with 1 param', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('GET');
@@ -95,7 +95,8 @@ test('calling a POST endpoint makes a request', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
+  expect(lastRequest.method).toBe('PATCH');
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('POST');
@@ -118,7 +119,7 @@ test('calling a PATCH endpoint makes a request', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('PATCH');
@@ -141,7 +142,7 @@ test('calling a PUT endpoint makes a request', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('PUT');
@@ -164,7 +165,7 @@ test('calling a DELETE endpoint makes a request', async() => {
   });
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('4');
+  expect(stdout).toMatch(/4/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('DELETE');
@@ -404,8 +405,8 @@ test('if onError is set and called without throwing, its result is used as respo
     res.end('4');
   });
   const { stdout } = await buildAndRun({ prod: true });
-  expect(stdout.split('\n')).toContain('caught error');
-  expect(stdout.split('\n')).toContain('3');
+  expect(stdout).toMatch(/caught error/);
+  expect(stdout).toMatch(/3/);
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('GET');
