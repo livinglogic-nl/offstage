@@ -96,7 +96,6 @@ test('calling a POST endpoint makes a request', async() => {
   const state = await createServer((req, res) => res.end('4'));
   const { stdout } = await buildAndRun({ prod: true });
   expect(stdout).toMatch(/4/);
-  expect(lastRequest.method).toBe('PATCH');
 
   const { lastRequest } = state;
   expect(lastRequest.method).toBe('POST');

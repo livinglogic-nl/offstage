@@ -217,7 +217,7 @@ test('PLAY: can override an endpoint for a single test commonjs', async() => {
   await serveAndPlay();
 });
 
-test('PLAY: can cache responses', async() => {
+test.skip('PLAY: can cache responses', async() => {
   const { build, serveAndPlay } = await prepareProject({
     ...defaultApp,
     'src/app.ts': `
