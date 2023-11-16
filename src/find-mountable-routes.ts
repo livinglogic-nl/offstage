@@ -6,9 +6,9 @@ interface FileContent {
 const entriesWithOffstage = async() => {
   const fs = (await import('fs')).default;
   const fg = (await import('fast-glob')).default;
-  let dir = process.cwd() + '/src';
+  let dir = process.cwd() + '/libs';
   if(!fs.existsSync(dir)) {
-    dir = process.cwd() + '/libs';
+      dir = process.cwd() + '/src';
   }
   const entries = await fg([ dir + '/**/*.ts' ]);
   return (await Promise.all(entries.map(async(file) => {
