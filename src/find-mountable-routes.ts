@@ -8,7 +8,7 @@ const entriesWithOffstage = async() => {
   const fg = (await import('fast-glob')).default;
   let dir = process.cwd() + '/src';
   if(!fs.existsSync(dir)) {
-    dir = process.cwd() + '/lib';
+    dir = process.cwd() + '/libs';
   }
   const entries = await fg([ dir + '/**/*.ts' ]);
   return (await Promise.all(entries.map(async(file) => {
