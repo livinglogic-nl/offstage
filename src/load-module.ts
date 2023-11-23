@@ -16,7 +16,7 @@ const transformFile = async(file:string, transFile:string) => {
     bundle: true,
     entryPoints: [ file ],
     external: [ 'offstage' ],
-    platform: 'neutral',
+    platform: 'node',
     format,
     outfile: transFile,
   });
