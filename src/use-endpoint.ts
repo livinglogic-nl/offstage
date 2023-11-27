@@ -9,6 +9,15 @@ const validateStatus = (config:OffstageConfig, response:Response) => {
   return func(response.status);
 }
 
+const tryParseJSON = (text:string) => {
+  if(text === '') { return undefined; }
+  try {
+    return JSON.parse(text);
+  } catch(e:any){
+    console.error(e.message);
+  }
+}
+
 export default (state:OffstageState) => {
   const createFetchRequest = async(url:string, options:any) => {
     const controller = new AbortController();
@@ -67,8 +76,7 @@ export default (state:OffstageState) => {
 
     const response = await createFetchRequest(finalUrl, config);
 
-    const text = await response.text();
-    const resultData = text.length ? JSON.parse(text) : undefined;
+    const resultData = tryParseJSON(await response.text());
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
       e.requestData = requestData;
@@ -93,7 +101,7 @@ export default (state:OffstageState) => {
 
     const finalUrl = `${config.baseURL ?? ''}${path}`;
     const response = await createFetchRequest(finalUrl, config);
-    const resultData = await response.json();
+    const resultData = tryParseJSON(await response.text());
     if(!validateStatus(config, response)) {
       const e = new Error('Response status was considered an error') as OffstageResponseError;
       e.requestData = requestData;
