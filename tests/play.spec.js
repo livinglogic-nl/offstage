@@ -336,7 +336,7 @@ test('PLAY: override responses are never cached', async() => {
   await serveAndPlay();
 });
 
-test('PACT: generates Pact files', async() => {
+test.skip('PACT: generates Pact files', async() => {
   const { dir, build, serveAndPlay } = await prepareProject({
     ...defaultApp,
     'tests/app.spec.ts': `

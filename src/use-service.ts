@@ -1,3 +1,4 @@
+import { devtool } from './devtool.js';
 import { getGlobal, isProduction } from "./mode.js";
 import { OffstageService } from "./types.js";
 
@@ -20,9 +21,9 @@ const injectDevtool = () => {
   };
   win.offstage = offstage;
 
-  const script = document.createElement('script');
-  script.src = '/node_modules/offstage/devtool.js';
-  document.head.appendChild(script);
+  const injectScript = document.createElement('script');
+  injectScript.textContent = devtool();
+  document.head.appendChild(injectScript);
   return win.offstage;
 }
 

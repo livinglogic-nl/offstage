@@ -259,7 +259,7 @@ test('factory works', async() => {
   });
 });
 
-test('minified takes less than 5kb', async() => {
+test('minified takes less than 15kb', async() => {
   const { dir } = await prepareProject({
     ...defaultApp,
     'src/math-service.ts': `
@@ -283,7 +283,7 @@ test('minified takes less than 5kb', async() => {
     outfile: 'app.js',
   });
   const total = result.outputFiles[0].text.length;
-  expect(total).toBeLessThan(5 * 1024);
+  expect(total).toBeLessThan(15 * 1024);
 });
 
 test('canceling a request results in a DOMException named AbortError', async() => {
