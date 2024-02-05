@@ -57,7 +57,8 @@ export const devtool = () => {
       return label;
     }
   
-    const isForceNetwork = () => offstage.forceNetwork || window.isOffstagePlaywright;
+    const isMockFlag = () => localStorage.getItem('offstage-mock') === '1';
+    const isForceNetwork = () => !isMockFlag() || window.isOffstagePlaywright;
   
     const render = () => {
       root.innerHTML = '';
@@ -70,11 +71,10 @@ export const devtool = () => {
         const menu = el(root, 'div', [ 'menu' ]);
         checkbox(menu, [ 'option' ], 'Force network', isForceNetwork(), () => {
           clearCache();
-          offstage.forceNetwork = !offstage.forceNetwork;
-          if(offstage.forceNetwork) {
-             localStorage.setItem('offstage-mock', '1');
-          } else {
+          if(isMockFlag()) {
              localStorage.removeItem('offstage-mock');
+          } else {
+             localStorage.setItem('offstage-mock', '1');
           }
           state.menuOpen = false;
           render();
@@ -94,15 +94,16 @@ export const devtool = () => {
                 state.filters.length === 0 || state.filters.includes(serviceMethodName)
               )
               .forEach(entry => {
-                 el(content, 'div', [ 'entry' ], \`
-                    <div class="call">
-                      <span class="service-method">'+entry.serviceMethodName+'</span>
-                      <span class="date-time">'+entry.date.toLocaleString()+'</span>
-                    </div>
-                    <div class="endpoint">'+entry.endpoint+'</div>
-                    <div class="request">'+JSON.stringify(entry.requestData, null, 2)+'</div>
-                    <div class="response">'+JSON.stringify(entry.responseData, null, 2)+'</div>
-                \`);
+                 el(content, 'div', [ 'entry' ],
+                  [
+                    '<div class="call">',
+                      '<span class="service-method">'+entry.serviceMethodName+'</span>',
+                      '<span class="date-time">'+entry.date.toLocaleString()+'</span>',
+                    '</div>',
+                    '<div class="endpoint">'+entry.endpoint+'</div>',
+                    '<div class="request">'+JSON.stringify(entry.requestData, null, 2)+'</div>',
+                    '<div class="response">'+JSON.stringify(entry.responseData, null, 2)+'</div>',
+                  ].join(''));
               })
             content.scrollTo(0,0);
           }
@@ -112,11 +113,11 @@ export const devtool = () => {
             const group = el(filter, 'div', [ 'group' ]);
             el(group, 'h2', [], serviceName);
             Object.keys(service).forEach(methodName => {
-              const key = \`'+serviceName+'.'+methodName+'\`
+              const key = [serviceName,methodName].join('.');
               const count = offstage.history.filter(e => e.serviceMethodName === key).length;
   
               const isActive = state.filters.includes(key);
-              checkbox(group, [], \`'+methodName+' ('+count+')\`, isActive, on => {
+              checkbox(group, [], methodName+' ('+count+')', isActive, on => {
                 state.filters = on ? [...state.filters, key] : state.filters.filter(k => k != key);
                 renderContent();
               });

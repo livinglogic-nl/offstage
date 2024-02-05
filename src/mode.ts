@@ -14,7 +14,7 @@ export const isMockAllowed = () => {
     if(isPlaywright()) {
       return false;
     }
-    if(getGlobal().offstage?.forceNetwork) {
+    if(localStorage.getItem('offstage-mock') !== '1') {
       return false;
     }
   } catch(_) {}
